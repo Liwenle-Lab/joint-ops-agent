@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-page-node-id="YNPX7tSZ5pJbT0723KHWvJ">
+<head data-page-node-id="b4kc1kHDiqyElHFxWEKIrS">
+<meta charset="UTF-8" data-page-node-id="mNbCt2q7MHmDq7rV5R3dlr">
+<meta name="viewport" content="width=device-width, initial-scale=1" data-page-node-id="DVnJ3xP6WKKxdSDZxDAEVb">
+<title>联合作战指挥多 Agent 系统 · 端到端流程图</title>
+<style>
+  :root{
+    --bg:#FFFFFF; --page:#F7F8FA; --ink:#1F2328; --ink2:#5F5E5A;
+    --line:#D8D6CE; --gray-f:#F1EFE8; --gray-s:#5F5E5A;
+    --blue-f:#E6F1FB; --blue-s:#185FA5; --blue-t:#042C53;
+    --amber-f:#FAEEDA; --amber-s:#BA7517; --amber-t:#633806;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; padding:32px 24px 64px;
+    background:var(--page); color:var(--ink);
+    font-family:"PingFang SC","Microsoft YaHei","Hiragino Sans GB",system-ui,-apple-system,sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1240px;margin:0 auto}
+  header{margin-bottom:20px}
+  h1{font-size:22px;font-weight:600;margin:0 0 8px;letter-spacing:.2px}
+  .sub{font-size:13px;line-height:1.7;color:var(--ink2);margin:0}
+  .card{
+    background:var(--bg); border:1px solid var(--line); border-radius:14px;
+    padding:20px 16px; overflow-x:auto;
+  }
+  svg{display:block;width:100%;min-width:900px;height:auto}
+  .legend{
+    margin-top:20px;padding-top:16px;border-top:1px solid var(--line);
+    display:flex;flex-wrap:wrap;gap:20px;font-size:12.5px;color:var(--ink2)
+  }
+  .legend i{display:inline-block;width:22px;height:0;border-top-width:2px;border-top-style:solid;vertical-align:middle;margin-right:7px}
+  .lg-gray i{border-top-color:#888780}
+  .lg-amber i{border-top-color:#BA7517;border-top-style:dashed}
+  .lg-blue i{border-top-color:#185FA5}
+  .note{margin-top:18px;font-size:12.5px;line-height:1.8;color:var(--ink2)}
+  .note b{color:var(--ink);font-weight:600}
+  footer{margin-top:22px;font-size:12px;color:#8A8880}
+</style>
+</head>
+<body data-page-node-id="uaq8HsPBKGLLljZXs8AGlE">
+<div class="wrap" data-page-node-id="xYM9xw3pEkGGgKwjvaEe2V">
+  <header data-page-node-id="HogHSpj1Cn3dPU6ADBHLHc">
+    <h1 data-page-node-id="txKmu2KQz0xCkZGauIlpDn">联合作战指挥多 Agent 系统 · 端到端流程图</h1>
+    <p class="sub" data-page-node-id="6tVD27lqxnTIZO1MEe5Sd9">入口四态路由 → 双链路执行 → 冲突触发协商 → 中心化仲裁 → 最终方案　｜　底部共享层是所有 agent 的唯一数据来源</p>
+  </header>
+
+  <div class="card" data-page-node-id="z2AGlvyuI6liojXDymE1ox">
+  <svg viewBox="0 0 1200 1472" xmlns="http://www.w3.org/2000/svg" role="img" data-page-node-id="Sppp72EB9BWYFn9xa0Y6rJ">
+    <title>联合作战指挥多 Agent 系统端到端流程图</title>
+    <desc data-page-node-id="W0CvKX5LrOlmeTVfP0SjUq">用户请求经意图识别 agent 产出结构化任务单，四态路由分发到领域外拒答、单域快通道、跨域全链路三条出口。全链路经联合指挥下发全局约束，三参谋隔离并行拟案，冲突检测后无冲突直接进仲裁、有冲突进入协商子循环，最终由联合仲裁输出联合作战方案。底部共享层提供兵力资源池、MCP 外部服务、多轮会话状态与过程留痕。</desc>
+    <defs data-page-node-id="23QHyS9ijmBZvdNLsfPlud">
+      <marker id="ar" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse" data-page-node-id="3b2kcthf1IiMQwXuBn23qR">
+        <path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" data-page-node-id="W5PyWdecIwXv07ZGKcGDD9"/>
+      </marker>
+      <style>
+        .th{font:500 14px "PingFang SC","Microsoft YaHei",system-ui,sans-serif}
+        .ts{font:400 12.5px "PingFang SC","Microsoft YaHei",system-ui,sans-serif}
+        .tl{font:500 12.5px "PingFang SC","Microsoft YaHei",system-ui,sans-serif}
+      </style>
+    </defs>
+
+    <rect x="500" y="40" width="200" height="48" rx="8" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8" data-page-node-id="MIzvrJQaRVrvDjDukwYrVS"/>
+    <text class="th" x="600" y="64" text-anchor="middle" dominant-baseline="central" style="fill:#2C2C2A" data-page-node-id="6AYPF2mtiw8g88ZKsAxC2Q">用户 · 多轮对话</text>
+    <line x1="600" y1="88" x2="600" y2="112" stroke="#888780" stroke-width="1.5" marker-end="url(#ar)" data-page-node-id="j1CEW2wVdZAOUrH7qzAWPx"/>
+
+    <rect x="160" y="116" width="880" height="84" rx="10" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8" data-page-node-id="gE3uwSnQzEmSMd2wJLUtcV"/>
+    <text class="th" x="180" y="142" dominant-baseline="central" style="fill:#2C2C2A" data-page-node-id="I7hmyYE3KA191Eeqh8CIW6">① 意图识别 agent（总入口）</text>
+    <text class="ts" x="180" y="166" dominant-baseline="central" style="fill:#5F5E5A" data-page-node-id="y5mgvk33ditXfrgr7HbGwR">领域（陆 / 海 / 空 / 联合）· 任务类型（查询 / 规划 / 推演 / 对比）· 复杂度 · 约束槽位 · 指代消解</text>
+    <text class="ts" x="180" y="186" dominant-baseline="central" style="fill:#5F5E5A" data-page-node-id="hxNd05AWgrRpQYFofzNJnb">产出「结构化任务单」——路由读的是这张单子，不是模型的直觉</text>
+    <line x1="600" y1="200" x2="600" y2="220" stroke="#888780" stroke-width="1.5" marker-end="url(#ar)" data-page-node-id="QClFLDsAePngoZCDyaqnHV"/>
+
+    <rect x="420" y="224" width="360" height="64" rx="8" fill="#FFFFFF" stroke="#BA7517" stroke-width="0.8" stroke-dasharray="5 4" data-page-node-id="BUvdmBMUDUlOKPz1i2Iy9t"/>
+    <text class="th" x="600" y="248" text-anchor="middle" dominant-baseline="central" style="fill:#633806" data-page-node-id="cCNGP4LAfD4oe9Xqodgk98">路由判定</text>
+    <text class="ts" x="600" y="268" text-anchor="middle" dominant-baseline="central" style="fill:#854F0B" data-page-node-id="IhEBPlxlAkgw0mMl4FfucM">领域内？· 跨域？· 任务类型？</text>
+
+    <line x1="600" y1="288" x2="600" y2="310" stroke="#888780" stroke-width="1.5" data-page-node-id="ztxNv82n1VEkFqNyDFsVR5"/>
+    <line x1="150" y1="310" x2="890" y2="310" stroke="#888780" stroke-width="1.5" data-page-node-id="UjtpqQChPv0tB1zrE1eoDd"/>
+    <line x1="150" y1="310" x2="150" y2="336" stroke="#888780" stroke-width="1.5" marker-end="url(#ar)" data-page-node-id="62m5zE5Vfelt4p6cS51mVr"/>
+    <line x1="430" y1="310" x2="430" y2="336" stroke="#888780" stroke-width="1.5" marker-end="url(#ar)" data-page-node-id="eWXz8otzIgvKptoa3PxxUI"/>
+    <line x1="890" y1="310" x2="890" y2="336" stroke="#888780" stroke-width="1.5" marker-end="url(#ar)" data-page-node-id="DSxZ3ZwWbqSZZ3PzIeMpWj"/>
+    <text class="tl" x="158" y="330" style="fill:#854F0B" data-page-node-id="BuxWAP320sCrMCPWWRa0Ae">领域外</text>
+    <text class="tl" x="438" y="330" style="fill:#185FA5" data-page-node-id="eHtFDcyXiFFEyNe1z2b4qO">单域查询</text>
+    <text class="tl" x="898" y="330" style="fill:#185FA5" data-page-node-id="5u2fapecUiEYbAR53FDWfs">跨域任务</text>
+
+    <rect x="40" y="344" width="220" height="96" rx="8" fill="#FAEEDA" stroke="#BA7517" stroke-width="0.8" stroke-dasharray="5 4" data-page-node-id="0jlr4sCa2rskef5Km0hFyd"/>
+    <text class="th" x="150" y="372" text-anchor="middle" dominant-baseline="central" style="fill:#633806" data-page-node-id="kFXzTnnlDW3DWV4AAPK8y7">明示拒答</text>
+    <text class="ts" x="150" y="396" text-anchor="middle" dominant-baseline="central" style="fill:#854F0B" data-page-node-id="jsPnAzil6MktYccDDX3FRP">不做顺手代答</text>
+    <text class="ts" x="150" y="418" text-anchor="middle" dominant-baseline="central" style="fill:#854F0B" data-page-node-id="UYj1vlLxMF2IjLKxTD8RLF">建议转人工 / 换工具</text>
+
+    <rect x="300" y="344" width="260" height="64" rx="8" fill="#E6F1FB" stroke="#185FA5" stroke-width="0.8" data-page-node-id="Ru9VxLO7O9dgr2UD7vCWFs"/>
+    <text class="th" x="430" y="366" text-anchor="middle" dominant-baseline="central" style="fill:#042C53" data-page-node-id="KBZKmFyrf6xgbT13rlCPnt">该域参谋 · 隔离 spawn</text>
+    <text class="ts" x="430" y="388" text-anchor="middle" dominant-baseline="central" style="fill:#185FA5" data-page-node-id="0b4pYqFYs34lYrGKHSBCmg">只带简报，没有历史</text>
+    <line x1="430" y1="408" x2="430" y2="428" stroke="#185FA5" stroke-width="1.5" marker-end="url(#ar)" data-page-node-id="vdFJ264BtnVGZrPVeKasW7"/>
+
+    <rect x="300" y="428" width="260" height="64" rx="8" fill="#E6F1FB" stroke="#185FA5" stroke-width="0.8" data-page-node-id="kHBMF6QpoLOwIwTNqHPLrQ"/>
+    <text class="th" x="430" y="450" text-anchor="middle" dominant-baseline="central" style="fill:#042C53" data-page-node-id="nLxl5bAUQtqBvdpIjLfNLN">查 SQLite 兵力池</text>
+    <text class="ts" x="430" y="472" text-anchor="middle" dominant-baseline="central" style="fill:#185FA5" data-page-node-id="1S9amPfdKL3txqZmBrOj24">数字由 SQL 返回，不让模型猜</text>
+    <line x1="430" y1="492" x2="430" y2="512" stroke="#185FA5" stroke-width="1.5" marker-end="url(#ar)" data-page-node-id="2LdZet02ABQh7AeuUGsHIG"/>
+
+    <rect x="300" y="512" width="260" height="64" rx="8" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8" data-page-node-id="AFCIuSanpNhqYcnLAMShqm"/>
+    <text class="th" x="430" y="534" text-anchor="middle" dominant-baseline="central" style="fill:#2C2C2A" data-page-node-id="8CP2DqJFwEvMaHh2METoP9">直接作答</text>
+    <text class="ts" x="430" y="556" text-anchor="middle" dominant-baseline="central" style="fill:#5F5E5A" data-page-node-id="vNuRFruTZzUvwjjhrD8rU4">结果可轻量校验</text>
+    <line x1="430" y1="576" x2="430" y2="594" stroke="#888780" stroke-width="1.5" marker-end="url(#ar)" data-page-node-id="HOgx1DxD3Gihu9CmMJDMdB"/>
+    <circle cx="430" cy="600" r="5" fill="#5F5E5A" data-page-node-id="vSF2p6DIuBIy8hWUPuw1Mj"/>
+    <text class="tl" x="444" y="601" dominant-baseline="central" style="fill:#5F5E5A" data-page-node-id="wMATqGTcpnF8BQlLZ2bCjY">返回用户</text>
+
+    <rect x="620" y="344" width="540" height="84" rx="8" fill="#E6F1FB" stroke="#185FA5" stroke-width="0.8" data-page-node-id="Zk9byVAfv0Nvc5gcC7MCnW"/>
+    <text class="th" x="640" y="368" dominant-baseline="central" style="fill:#042C53" data-page-node-id="ItYUYXE5H5PwQ3nnCYaZXM">② 联合指挥 agent</text>
+    <text class="ts" x="640" y="390" dominant-baseline="central" style="fill:#185FA5" data-page-node-id="IqMtAAOy7QsyyH1FlFh7Sm">任务拆解 · 依赖排序 · 并行 / 串行编排 · 生成自包含简报</text>
+    <text class="ts" x="640" y="410" dominant-baseline="central" style="fill:#185FA5" data-page-node-id="85nQGdqcCnIlgidHQdWwFG">下发全局约束：时间窗 · 兵力上限 · 禁区 · 优先级 · 交战规则</text>
+    <line x1="890" y1="428" x2="890" y2="448" stroke="#185FA5" stroke-width="1.5" marker-end="url(#ar)" data-page-node-id="ORBEE7Xo5YFb4A7s0efzBC"/>
+
+    <rect x="620" y="448" width="540" height="132" rx="10" fill="#E6F1FB" stroke="#185FA5" stroke-width="0.8" data-page-node-id="3CD0nUJ26sV6AqAJWyBuWE"/>
+    <text class="ts" x="640" y="470" dominant-baseline="central" style="fill:#185FA5" data-page-node-id="1ag6iQO4DbKgPrqJ0mT9pO">三参谋隔离并行 spawn · 各自独立，互不可见</text>
+    <rect x="640" y="484" width="156" height="84" rx="8" fill="#B5D4F4" stroke="#185FA5" stroke-width="0.8" data-page-node-id="Igo3d18NESn2AEMeG9rIU1"/>
+    <text class="tl" x="718" y="504" text-anchor="middle" dominant-baseline="central" style="fill:#042C53" data-page-node-id="k4VTl0AzXHbiKbITXYoVND">陆军参谋</text>
+    <text class="ts" x="718" y="524" text-anchor="middle" dominant-baseline="central" style="fill:#185FA5" data-page-node-id="23FTluMJsh16lrUUdYQfe6">messages[] 全新</text>
+    <text class="ts" x="718" y="543" text-anchor="middle" dominant-baseline="central" style="fill:#185FA5" data-page-node-id="e8bOO5Cj1jvXHGJ2W8R84K">写 plans/army.json</text>
+    <text class="ts" x="718" y="561" text-anchor="middle" dominant-baseline="central" style="fill:#185FA5" data-page-node-id="8lfL1LWHL74ecIofSp2wE5">回传 200 字摘要</text>
+    <rect x="812" y="484" width="156" height="84" rx="8" fill="#B5D4F4" stroke="#185FA5" stroke-width="0.8" data-page-node-id="jL0cKKFDW6Sg7dMvq7ILMr"/>
+    <text class="tl" x="890" y="504" text-anchor="middle" dominant-baseline="central" style="fill:#042C53" data-page-node-id="qFZoy4VCbkOa3tt3SRD2Qi">海军参谋</text>
+    <text class="ts" x="890" y="524" text-anchor="middle" dominant-baseline="central" style="fill:#185FA5" data-page-node-id="nxs5DkgkXG7lBEt87pOQCA">messages[] 全新</text>
+    <text class="ts" x="890" y="543" text-anchor="middle" dominant-baseline="central" style="fill:#185FA5" data-page-node-id="XGHTRx3LRqwFDjmAUqpVwm">写 plans/navy.json</text>
+    <text class="ts" x="890" y="561" text-anchor="middle" dominant-baseline="central" style="fill:#185FA5" data-page-node-id="zUHqBsez84Uor6TOqLGN4H">回传 200 字摘要</text>
+    <rect x="984" y="484" width="156" height="84" rx="8" fill="#B5D4F4" stroke="#185FA5" stroke-width="0.8" data-page-node-id="q0583SR4Uon1VmTZgENwHC"/>
+    <text class="tl" x="1062" y="504" text-anchor="middle" dominant-baseline="central" style="fill:#042C53" data-page-node-id="xeWwVuLaHQzuFCWK35qGzE">空军参谋</text>
+    <text class="ts" x="1062" y="524" text-anchor="middle" dominant-baseline="central" style="fill:#185FA5" data-page-node-id="19okAKV0QuUvyG5zXr8NSH">messages[] 全新</text>
+    <text class="ts" x="1062" y="543" text-anchor="middle" dominant-baseline="central" style="fill:#185FA5" data-page-node-id="B9Xl2W8L9a81yusrDfdydu">写 plans/air.json</text>
+    <text class="ts" x="1062" y="561" text-anchor="middle" dominant-baseline="central" style="fill:#185FA5" data-page-node-id="hrsYDgqqmBl9iLdfpxAEbh">回传 200 字摘要</text>
+    <line x1="890" y1="580" x2="890" y2="600" stroke="#185FA5" stroke-width="1.5" marker-end="url(#ar)" data-page-node-id="gqv140coVKbpVlzQPza66a"/>
+
+    <rect x="620" y="600" width="540" height="64" rx="8" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8" data-page-node-id="va8USPplWgu54LHnGCcy8g"/>
+    <text class="th" x="640" y="622" dominant-baseline="central" style="fill:#2C2C2A" data-page-node-id="gLexgrYdmSWASnew0d9vfg">资源冲突检测</text>
+    <text class="ts" x="640" y="644" dominant-baseline="central" style="fill:#5F5E5A" data-page-node-id="FBknAyr6yQe4qEC7lnIvNa">运力 · 火力支援 · 卫星过顶窗口 · 时间窗</text>
+
+    <line x1="890" y1="664" x2="890" y2="706" stroke="#BA7517" stroke-width="1.5" marker-end="url(#ar)" data-page-node-id="L89bWN5tB6DfoTJ89MCNZq"/>
+    <text class="tl" x="902" y="690" dominant-baseline="central" style="fill:#854F0B" data-page-node-id="WB0wIh0e7m0uselsJO1euC">有冲突 → 开协商</text>
+    <path d="M890 664 L890 684 L592 684 L592 1040 L614 1040" fill="none" stroke="#888780" stroke-width="1.5" marker-end="url(#ar)" data-page-node-id="Xix6kObjFAFz0VjQTfPJpa"/>
+    <text class="tl" x="620" y="700" dominant-baseline="central" style="fill:#5F5E5A" data-page-node-id="EaAsstOMwLTcRT0hwLRnrp">无冲突 → 直接进仲裁</text>
+
+    <rect x="620" y="712" width="540" height="214" rx="10" fill="#FAEEDA" stroke="#BA7517" stroke-width="0.8" data-page-node-id="K0BApC0gzQwzr52AftUC1N"/>
+    <text class="th" x="640" y="734" dominant-baseline="central" style="fill:#633806" data-page-node-id="D57lkURr4c9TQectgKjSFj">协商子循环 · 按需开启（最多 2–3 轮）</text>
+
+    <rect x="640" y="748" width="150" height="156" rx="8" fill="#FFFFFF" stroke="#BA7517" stroke-width="0.8" data-page-node-id="bkFNpBVt1AzBUlSsoCHZxD"/>
+    <text class="tl" x="656" y="770" dominant-baseline="central" style="fill:#633806" data-page-node-id="CZlSyXseMeep82TbaaklN6">共享黑板</text>
+    <text class="ts" x="656" y="798" dominant-baseline="central" style="fill:#854F0B" data-page-node-id="V4GCmv2HuWaDtgT4yXODq7">· round</text>
+    <text class="ts" x="656" y="820" dominant-baseline="central" style="fill:#854F0B" data-page-node-id="cYIa5sLzwO64bDCK6DmKh0">· speaker</text>
+    <text class="ts" x="656" y="842" dominant-baseline="central" style="fill:#854F0B" data-page-node-id="rn9CoqwZKfcb5rxFUjgeVK">· objection</text>
+    <text class="ts" x="656" y="864" dominant-baseline="central" style="fill:#854F0B" data-page-node-id="cW3AXt2s1FsYDVWkGS6brH">· resource_ask</text>
+    <text class="ts" x="656" y="886" dominant-baseline="central" style="fill:#854F0B" data-page-node-id="XpDYQaGW2RxaHwtvcAMvCM">· concession</text>
+
+    <rect x="806" y="748" width="334" height="68" rx="8" fill="#FFFFFF" stroke="#BA7517" stroke-width="0.8" data-page-node-id="vaWR19IU3fuEujRPjFwucR"/>
+    <text class="tl" x="822" y="770" dominant-baseline="central" style="fill:#633806" data-page-node-id="WK6w61n89k4vGu83hk6ICZ">Round N：相关参谋增量修订</text>
+    <text class="ts" x="822" y="792" dominant-baseline="central" style="fill:#854F0B" data-page-node-id="LeJvsqPcrEP0GLLOyLA57H">保留自身记忆，只传增量 + 对方反建议</text>
+    <line x1="973" y1="816" x2="973" y2="832" stroke="#BA7517" stroke-width="1.5" marker-end="url(#ar)" data-page-node-id="15xeqXCY2uz9HMYl8xJRXG"/>
+
+    <rect x="806" y="832" width="334" height="68" rx="8" fill="#FFFFFF" stroke="#BA7517" stroke-width="0.8" data-page-node-id="CWyqpmgFBZXJJcnNZgWAi9"/>
+    <text class="tl" x="822" y="854" dominant-baseline="central" style="fill:#633806" data-page-node-id="8w23FTZtaVRLRgtsIAQL8X">收敛判据</text>
+    <text class="ts" x="822" y="876" dominant-baseline="central" style="fill:#854F0B" data-page-node-id="NyQViYJtrGqx04tCd8KV5k">无新增 objection ｜ 轮次到顶 ｜ 收益递减</text>
+    <path d="M1140 866 L1152 866 L1152 782 L1144 782" fill="none" stroke="#BA7517" stroke-width="1.5" marker-end="url(#ar)" data-page-node-id="A4zJI2roBFMygw0s2rCU60"/>
+    <text class="ts" x="806" y="916" dominant-baseline="central" style="fill:#854F0B" data-page-node-id="FSeJ98w4gRGEwbV6STHxoz">未收敛 → 追加争议点重开一轮；收敛或到顶 → 退出循环</text>
+
+    <line x1="890" y1="926" x2="890" y2="996" stroke="#BA7517" stroke-width="1.5" marker-end="url(#ar)" data-page-node-id="qAsIcGVCTSbXbNgTGZefay"/>
+
+    <rect x="620" y="1000" width="540" height="80" rx="8" fill="#E6F1FB" stroke="#185FA5" stroke-width="0.8" data-page-node-id="XHm0H8r1BB316abTvtV5vF"/>
+    <text class="th" x="640" y="1024" dominant-baseline="central" style="fill:#042C53" data-page-node-id="TzbR1FDulWGoXDJMY7W0aI">③ 联合仲裁 · 中心化裁决</text>
+    <text class="ts" x="640" y="1046" dominant-baseline="central" style="fill:#185FA5" data-page-node-id="qVSXOojQFdFmyBiEr5SjMH">硬规则过滤越界诉求（兵力上限 / 时间窗 / 禁区）→ 对残余冲突按优先级裁决</text>
+    <text class="ts" x="640" y="1066" dominant-baseline="central" style="fill:#185FA5" data-page-node-id="xyIXFVB1AWR0jmppPeDfuH">折中重规划 · 跨域一致性校验 · 让步记录归档</text>
+    <line x1="890" y1="1080" x2="890" y2="1100" stroke="#185FA5" stroke-width="1.5" marker-end="url(#ar)" data-page-node-id="EXcwj6EDClgnkC9ssSX1GF"/>
+
+    <rect x="700" y="1100" width="380" height="72" rx="8" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8" data-page-node-id="gDeMpDvOKs7QonWWdtycwJ"/>
+    <text class="th" x="890" y="1124" text-anchor="middle" dominant-baseline="central" style="fill:#2C2C2A" data-page-node-id="XIrVvK44VI2saZeXs57fAx">联合作战最终方案</text>
+    <text class="ts" x="890" y="1146" text-anchor="middle" dominant-baseline="central" style="fill:#5F5E5A" data-page-node-id="GYqVZanr5z0iAaghx9xrzv">兵力编成表 · 行动时序 · 风险与备选</text>
+    <text class="ts" x="890" y="1164" text-anchor="middle" dominant-baseline="central" style="fill:#5F5E5A" data-page-node-id="4MDfyE3iW2BJswhWdk67vq">含各参谋让步记录与残余风险</text>
+
+    <rect x="40" y="1200" width="1120" height="120" rx="12" fill="#F1EFE8" stroke="#888780" stroke-width="0.8" stroke-dasharray="6 5" data-page-node-id="tAMlw3uw3uQEL4ChzXLI3n"/>
+    <text class="ts" x="60" y="1226" dominant-baseline="central" style="fill:#2C2C2A" data-page-node-id="c7y0Xf33Z98nZUWOb3eTD7">共享层 · 所有数字与状态都在这里，agent 只通过工具调用访问</text>
+    <rect x="60" y="1244" width="246" height="58" rx="8" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="0.8" data-page-node-id="QmZuJ1PlMCShBUgkjA5faG"/>
+    <text class="tl" x="183" y="1266" text-anchor="middle" dominant-baseline="central" style="fill:#2C2C2A" data-page-node-id="w2gPROJe4mfe5w9rnfoGrO">兵力资源池</text>
+    <text class="ts" x="183" y="1288" text-anchor="middle" dominant-baseline="central" style="fill:#5F5E5A" data-page-node-id="uzPZpj1GVPJd1tKj9INz15">JSON 种子 → SQLite 表</text>
+    <rect x="338" y="1244" width="246" height="58" rx="8" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="0.8" data-page-node-id="NO2dZ2nxApocJ2EUSNkNzY"/>
+    <text class="tl" x="461" y="1266" text-anchor="middle" dominant-baseline="central" style="fill:#2C2C2A" data-page-node-id="i6uzuV8rtjPhyc1Vurn5Fp">MCP 外部服务</text>
+    <text class="ts" x="461" y="1288" text-anchor="middle" dominant-baseline="central" style="fill:#5F5E5A" data-page-node-id="drZWzk7EG3u0VUOR2MuHHr">情报 / 气象 / 地图 / 卫星</text>
+    <rect x="616" y="1244" width="246" height="58" rx="8" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="0.8" data-page-node-id="oahuE2sAjjbCqaIX0lFk3k"/>
+    <text class="tl" x="739" y="1266" text-anchor="middle" dominant-baseline="central" style="fill:#2C2C2A" data-page-node-id="TAFEX7xMdzkwZj4kHWoSAm">多轮会话状态</text>
+    <text class="ts" x="739" y="1288" text-anchor="middle" dominant-baseline="central" style="fill:#5F5E5A" data-page-node-id="w6H9FL2poXLRD7nNqWw1n4">槽位 · 已下发约束 · 方案版本</text>
+    <rect x="894" y="1244" width="246" height="58" rx="8" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="0.8" data-page-node-id="cv8mOHcphDiE2sUpXZwYAT"/>
+    <text class="tl" x="1017" y="1266" text-anchor="middle" dominant-baseline="central" style="fill:#2C2C2A" data-page-node-id="wHeWfUPyF7zkHMuxD4PVvF">trace / 协商记录</text>
+    <text class="ts" x="1017" y="1288" text-anchor="middle" dominant-baseline="central" style="fill:#5F5E5A" data-page-node-id="ELNO6zD6FlgmhAAhCGF8nu">过程留痕，可复盘可解释</text>
+
+    <text class="ts" x="60" y="1348" dominant-baseline="central" style="fill:#5F5E5A" data-page-node-id="LEGt7SbfQi9g8m1j40spuq">读图：灰色 = 主流程　｜　琥珀色 = 协商子循环（条件触发的增量层）　｜　虚线框 = 边界与终端</text>
+    <text class="ts" x="60" y="1376" dominant-baseline="central" style="fill:#2C2C2A" data-page-node-id="Bv2YFukSJHpJMKfAxuygqA">契约 1　调用 prompt 必须自包含：全局约束 + 资源快照 + 输出 schema + 落盘路径</text>
+    <text class="ts" x="60" y="1398" dominant-baseline="central" style="fill:#2C2C2A" data-page-node-id="Fo6XCcyB10ZIvhL9k7hwmK">契约 2　产物以落盘为准，摘要只是索引；指挥与仲裁只读文件里的数字</text>
+    <text class="ts" x="60" y="1420" dominant-baseline="central" style="fill:#2C2C2A" data-page-node-id="9bAoa7aFCrSWFbCECSY94X">契约 3　多轮状态外置：子 agent 无记忆，槽位与方案版本一律存共享层</text>
+    <text class="ts" x="60" y="1442" dominant-baseline="central" style="fill:#2C2C2A" data-page-node-id="CfeEYtxzGq9dQEy4W6T7CK">契约 4　失败必须结构化：返回 error_code + 落盘路径，否则无从重试</text>
+    <text class="ts" x="60" y="1464" dominant-baseline="central" style="fill:#2C2C2A" data-page-node-id="zsZXuBs80MGSLxk2xGr1nD">契约 5　防震荡：每轮版本 diff，让步被拿回即标记 oscillating 并强制裁决</text>
+  </svg>
+  </div>
+
+  <div class="legend" data-page-node-id="TnXbKKylgFbUgfUfXnvW2g">
+    <span class="lg-gray" data-page-node-id="YGayM5BoCDLlOPog55xcIJ"><i data-page-node-id="XZeWZrkr703BdJQ2gXc9qD"></i>主流程（灰色实线 = spawn，prompt 自包含）</span>
+    <span class="lg-amber" data-page-node-id="DoI7elDByekTzodrEVDeiK"><i data-page-node-id="LVxpYcuxzw3rEeyP0CHkX3"></i>协商子循环（条件触发，最多 2–3 轮）</span>
+    <span class="lg-blue" data-page-node-id="MuYl2dlTdHJjdPpQyShuj5"><i data-page-node-id="QUtR0TOVhEI2JrI59UOFLN"></i>产物落盘（指挥与仲裁只信任文件里的数字）</span>
+  </div>
+
+  <p class="note" data-page-node-id="KPmQbtb8Ein6rkIpvRUt5C">
+    <b data-page-node-id="guDUqh5fJD1wLaGds3e2DB">三条出口，一条纪律。</b>「领域外 → 明示拒答」这条分支不能省——垂直 agent 的标志不是它会什么，而是它能不能明确拒绝什么。<br data-page-node-id="CjzQTHKW08z8a4yT6kLbDU">
+    <b data-page-node-id="ywcsdE6rFPPTdYhZG8gBqY">快通道跳过指挥与仲裁。</b>问"陆军多少人"不该让三位参谋各发一遍言，这是按需编排，不是固定流水线。<br data-page-node-id="eRUPEweehZrpCAKIBsmA33">
+    <b data-page-node-id="gbuMfGNfTSZSADLpQquv15">协商是条件触发的增量层。</b>默认走中心化裁决，只有检测到共享资源冲突时，才拉起冲突相关的参谋开 2–3 轮联席会；仍不收敛则由仲裁按优先级强制裁决。
+  </p>
+
+  <footer data-page-node-id="14x4fX5EC4gsl2VsQZqymr">联合作战指挥多 Agent 系统 · 设计对齐阶段产物（2026-09-15）· 配套文档：设计总纲.md</footer>
+</div>
+</body>
+</html>

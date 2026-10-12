@@ -1,0 +1,25 @@
+# 联合作战指挥多Agent系统 · 依赖清单（实测通过的版本）
+
+# 第一~三期（推理链路）
+langgraph==1.2.11
+langgraph-checkpoint==4.2.0
+langgraph-checkpoint-sqlite==3.1.1
+langchain-core==1.6.3
+openai==3.16.2
+httpx==0.28.1
+anyio==4.15.1
+pydantic==2.13.5
+
+# 第四期（Web 控制台）
+fastapi==0.141.1
+starlette==1.6.0
+uvicorn==0.52.4
+aiofiles==25.1.0
+
+# 工具（启动脚本读取 config/.env 用）
+python-dotenv==1.1.0
+
+# 说明：
+# - langgraph-checkpoint-sqlite 是多轮会话的持久化后端，必须单独装（不随 langgraph 自带）
+# - aiofiles 是 FastAPI 返回静态文件的依赖，缺了 css/js 会 404
+# - 版本号为本项目实测通过的版本，升级大版本请注意 LangGraph API 变更

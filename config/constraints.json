@@ -1,0 +1,22 @@
+{
+  "_说明": "全局约束由指挥层从这里读取并下发，参谋无权修改。对应《项目设计文档》HR-01~HR-05",
+  "force_cap": 30000,
+  "deadline_days": 5,
+  "no_go_zones": ["A禁区", "B雷区"],
+  "roe_allowed": ["常规"],
+  "resource_cap": {
+    "transport": 50,
+    "fires": 15,
+    "satellite": 4,
+    "sealift": 12
+  },
+  "per_sortie_capacity": 800,
+  "sorties_per_day": 2,
+  "max_negotiation_rounds": 3,
+  "max_retry": 2,
+
+  "_环境感知说明": "以下三项不属于作战约束（default_constraints 的白名单里没有它们，不会混进下发给参谋的约束）。env_enabled=false 可整块关掉环境查询，离线演示或接口不可用时用。",
+  "env_enabled": true,
+  "env_max_bases": 3,
+  "env_days": 1
+}

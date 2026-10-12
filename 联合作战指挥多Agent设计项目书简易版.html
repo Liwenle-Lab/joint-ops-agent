@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-page-node-id="opqO6WLYDsZgMDSbMd7iED">
+<head data-page-node-id="k7zJnVhTTHVnaCrnmRwz07">
+<meta charset="UTF-8" data-page-node-id="Quh4Y1QjzH8KDp6jhvcJSo">
+<meta name="viewport" content="width=device-width, initial-scale=1.0" data-page-node-id="llT9zo5sHbE159OF80EfCK">
+<title>联合作战指挥多 Agent 设计项目书 · 简易版</title>
+<style>
+  @page { size: A4; margin: 16mm 15mm 14mm 15mm; }
+
+  * { box-sizing: border-box; }
+
+  html { -webkit-text-size-adjust: 100%; }
+
+  body {
+    margin: 0;
+    padding: 28px 20px 40px;
+    background: #eef1f6;
+    font-family: "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", "Source Han Sans SC", "Segoe UI", sans-serif;
+    color: #1f2733;
+    font-size: 15px;
+    line-height: 1.75;
+  }
+
+  .sheet {
+    max-width: 820px;
+    margin: 0 auto;
+    background: #ffffff;
+    border-radius: 4px;
+    box-shadow: 0 2px 18px rgba(24, 39, 66, .12);
+    padding: 40px 44px 46px;
+  }
+
+  /* ---------- 页眉 ---------- */
+  .doc-head {
+    border-bottom: 3px solid #1f4e79;
+    padding-bottom: 16px;
+    margin-bottom: 22px;
+  }
+  .kicker {
+    display: inline-block;
+    font-size: 12px;
+    letter-spacing: .16em;
+    color: #1f4e79;
+    background: #eaf1f9;
+    border-radius: 3px;
+    padding: 3px 10px;
+    margin-bottom: 12px;
+  }
+  h1 {
+    font-size: 25px;
+    line-height: 1.4;
+    margin: 0 0 8px;
+    color: #14213d;
+    letter-spacing: .01em;
+  }
+  .subtitle {
+    font-size: 13px;
+    color: #6b7787;
+    margin: 0;
+  }
+
+  /* ---------- 通用表格 ---------- */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 14px 0 20px;
+    font-size: 14px;
+    page-break-inside: auto;
+  }
+  th, td {
+    border: 1px solid #d5dce6;
+    padding: 9px 11px;
+    text-align: left;
+    vertical-align: top;
+    line-height: 1.65;
+  }
+  th {
+    background: #f2f6fb;
+    color: #1f4e79;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+  tbody tr:nth-child(even) td { background: #fafbfd; }
+
+  /* 元信息表 */
+  table.meta th { width: 96px; background: #eef3fa; }
+  table.meta td { background: #ffffff !important; }
+
+  /* 差异对比表：首列强调 */
+  table.diff td:first-child { font-weight: 700; color: #14213d; width: 74px; }
+  table.diff th:nth-child(2), table.diff td:nth-child(2) { width: 33%; }
+
+  /* 阶段表 */
+  table.phase th:first-child { width: 132px; }
+  table.phase th:nth-child(3), table.phase td:nth-child(3) { width: 40%; }
+
+  /* 决策表 */
+  table.decision th:nth-child(1) { width: 34px; text-align: center; }
+  table.decision th:nth-child(2) { width: 108px; }
+
+  /* ---------- 标题 ---------- */
+  h2 {
+    font-size: 18px;
+    color: #14213d;
+    margin: 30px 0 10px;
+    padding-left: 12px;
+    border-left: 5px solid #1f4e79;
+    line-height: 1.5;
+    page-break-after: avoid;
+  }
+  h2:first-of-type { margin-top: 6px; }
+
+  p { margin: 10px 0; }
+  strong { color: #14213d; font-weight: 700; }
+
+  /* 一句话定位 */
+  .lead {
+    background: #f5f8fc;
+    border-left: 4px solid #4a7fb5;
+    border-radius: 0 3px 3px 0;
+    padding: 12px 16px;
+    margin: 14px 0 18px;
+    font-size: 15px;
+    color: #1f2733;
+  }
+  .lead strong { color: #1f4e79; }
+
+  /* ---------- 状态点 ---------- */
+  .dot {
+    display: inline-block;
+    width: 9px; height: 9px;
+    border-radius: 50%;
+    margin-right: 6px;
+    vertical-align: 1px;
+  }
+  .dot.g { background: #2e9e5b; }
+  .dot.y { background: #d99a17; }
+  .dot.r { background: #cc3b3b; }
+
+  /* ---------- 清单 ---------- */
+  ol.risks { margin: 10px 0 18px; padding-left: 0; list-style: none; counter-reset: r; }
+  ol.risks > li {
+    counter-increment: r;
+    position: relative;
+    padding: 8px 0 8px 40px;
+    border-bottom: 1px dashed #e2e8f0;
+    page-break-inside: avoid;
+  }
+  ol.risks > li:last-child { border-bottom: none; }
+  ol.risks > li::before {
+    content: counter(r);
+    position: absolute;
+    left: 0; top: 10px;
+    width: 24px; height: 24px;
+    border-radius: 50%;
+    background: #1f4e79;
+    color: #fff;
+    font-size: 13px;
+    font-weight: 700;
+    text-align: center;
+    line-height: 24px;
+  }
+
+  .checklist {
+    background: #f7faf7;
+    border: 1px solid #dceadc;
+    border-radius: 3px;
+    padding: 12px 16px;
+    margin: 12px 0 18px;
+    font-size: 14px;
+  }
+  .checklist .k { font-weight: 700; color: #1f4e79; }
+  .warnbox {
+    background: #fdf8f4;
+    border: 1px solid #f0e0d2;
+    border-radius: 3px;
+    padding: 12px 16px;
+    margin: 12px 0 18px;
+    font-size: 14px;
+  }
+  .warnbox .k { font-weight: 700; color: #a85818; }
+
+  /* ---------- 页脚 ---------- */
+  .doc-foot {
+    margin-top: 34px;
+    padding-top: 16px;
+    border-top: 1px solid #e2e8f0;
+    font-size: 13px;
+    color: #6b7787;
+    line-height: 1.9;
+    page-break-inside: avoid;
+  }
+  .doc-foot .k { color: #1f4e79; font-weight: 700; }
+  .foot-meta {
+    margin-top: 14px;
+    font-size: 12px;
+    color: #98a3b3;
+    text-align: center;
+  }
+
+  /* ---------- 手机适配 ---------- */
+  @media (max-width: 640px) {
+    body { padding: 12px 10px 24px; font-size: 15px; }
+    .sheet { padding: 22px 16px 28px; border-radius: 3px; }
+    h1 { font-size: 20px; }
+    h2 { font-size: 16.5px; }
+    table { font-size: 13.5px; }
+    th, td { padding: 7px 8px; }
+    th { white-space: normal; }
+    table.meta th { width: 62px; }
+    table.diff td:first-child { width: 56px; }
+    table.phase th:first-child { width: 88px; }
+    table.decision th:nth-child(2) { width: 72px; }
+  }
+
+  @media print {
+    body { background: #fff; padding: 0; font-size: 12.2pt; }
+    .sheet {
+      max-width: none;
+      box-shadow: none;
+      border-radius: 0;
+      padding: 0;
+      margin: 0;
+    }
+    h1 { font-size: 20pt; }
+    h2 { font-size: 14pt; margin: 20px 0 8px; }
+    table { font-size: 10.4pt; margin: 10px 0 14px; }
+    th, td { padding: 6px 8px; line-height: 1.6; }
+    tbody tr { page-break-inside: avoid; }
+    .lead, .checklist, .warnbox { page-break-inside: avoid; }
+    .page-break { page-break-before: always; }
+  }
+</style>
+</head>
+<body data-page-node-id="CWgZUnwSDAsCqjdDhoo6Ng">
+<div class="sheet" data-page-node-id="jXTONx7Iru4f2JLsBs5fZX">
+
+  <header class="doc-head" data-page-node-id="lm952crYTSsIADXtlF9GaD">
+    <div class="kicker" data-page-node-id="LGw1MnKKIeIDbdGdMYITX9">设计项目书 · 简易版</div>
+    <h1 data-page-node-id="YU0FbYTmqUdPiXgfUAtPnF">联合作战指挥多 Agent 系统</h1>
+    <p class="subtitle" data-page-node-id="2oha7mSdYG1yR0TYpNEea3">设计已完成 · 原型已验证 · 产品实现未开始 &nbsp;|&nbsp; 2026-09-18</p>
+  </header>
+
+  <table class="meta" data-page-node-id="AkNT4npWDQwjwT8Mq9OgCX">
+    <tbody data-page-node-id="r1H6fkc8X1gdAZKhzILnwY">
+      <tr data-page-node-id="1glzNjZ2HQlpVI4VEHMSVl"><th data-page-node-id="Ec44hl7zYZsYE9G2HHfM3R">日期</th><td data-page-node-id="MYozn2qc9ksKhHUCYu7JJh">2026-09-18</td></tr>
+      <tr data-page-node-id="w9REAGBoyidPvw6REWTBDf"><th data-page-node-id="8tssYimYETRytjy5MUmBmd">当前阶段</th><td data-page-node-id="xnOXYyKfChZM8qatZ3eeVo"><strong data-page-node-id="ommpzdMArwIB14xwE4IHC3">设计已完成 · 原型已验证 · 产品实现未开始</strong></td></tr>
+      <tr data-page-node-id="6sn0FuCDwNiqBUjsx1wFmA"><th data-page-node-id="iYzVFam2Gywt4iRCMJ1LcW">四项已定决策</th><td data-page-node-id="bguCC2llFoy6ioxEOl2yhF">① <strong data-page-node-id="FytFHZj3rrO8gFmGleA54E">先做最小可用</strong>（第一期）　② <strong data-page-node-id="om9vPrHwREzO73VEAifJN8">先接线上模型调试，通过后再本地部署</strong>　③ <strong data-page-node-id="ldD2eJM6p4wwM8TURNqepW">验收口径＝链路跑通即可</strong>　④ <strong data-page-node-id="DaWRbo5JcPOOUYDFbbYB5n">先做底层框架，跑通后再搭前端页面</strong></td></tr>
+      <tr data-page-node-id="48PcxoHZPMHpWOBsQospjG"><th data-page-node-id="2DYIxfCintEXGwUM5CIdzg">阅读时间</th><td data-page-node-id="ngf2Rs9uWxsMi4BzR7mk8A">3 分钟（细节见《项目设计文档（最终版）》）</td></tr>
+    </tbody>
+  </table>
+
+  <h2 data-page-node-id="Skb5PAtMNIOm6dmuA8iSyM">一、项目定位与设计要点</h2>
+
+  <div class="lead" data-page-node-id="OY9XFrue2KrlZ1a8Pqy8uP">
+    一句话：<strong data-page-node-id="BOFrW8rcVevi7oc6yzgg2y">把自然语言描述的作战问题，可靠地转换成"有全局约束、数字可追溯、冲突可仲裁"的结构化决策支持。</strong>
+  </div>
+
+  <p data-page-node-id="o9MYjhUICRVjyxNN9pZnRS">核心玩法是<strong data-page-node-id="JACQxNKBvGexxOBtbdMeRo">"总指挥 + 三军参谋"的角色分工</strong>——不是一个大模型包打天下。用户问"陆军多少人多少装备"，只派陆军参谋查库回答；用户给一个复杂作战背景，才由总指挥拆解任务、下发约束，海陆空三参谋并行拟案，最后由总指挥仲裁出决心方案。</p>
+
+  <p data-page-node-id="wkAdS7ItZiAvW7iJmzR6xU"><strong data-page-node-id="DAVmNmgoN2B3vljnU7VUKN">与通用大模型的五点关键差异：</strong></p>
+
+  <table class="diff" data-page-node-id="bmImkz7c0sVzeyqXSA6mGE">
+    <thead data-page-node-id="2Xg01a2A9ecdziDSh1sYEB">
+      <tr data-page-node-id="ITbFEOl2QDlz8CiEgfCKwp"><th data-page-node-id="UOpeLScGFr7Al9DrP4a0T2">维度</th><th data-page-node-id="KyW6BoEpDvHPEhxZ0TX614">通用大模型</th><th data-page-node-id="CFLKCHw7ZcHdpMQnrJnQ74">本系统</th></tr>
+    </thead>
+    <tbody data-page-node-id="UeAf28760J0f1Urc33AapO">
+      <tr data-page-node-id="8V6btnSrVD3m5uVfO8eCLQ"><td data-page-node-id="PXCqIf8nHw0uddcFXAxd9c">数字</td><td data-page-node-id="RGvCTDcMLBmTYz20mnIknx">靠"说"，会编</td><td data-page-node-id="DUuQWFS26SNtTHwKDHeDTQ">全部查 SQLite，带来源，可审计</td></tr>
+      <tr data-page-node-id="UAg5Memtp4MFOx6DIWAGA6"><td data-page-node-id="XHsLtt1q6hbygVuCeRYShs">约束</td><td data-page-node-id="kQmVsiuRPuOTVtCukvvvYv">谁都能改条件</td><td data-page-node-id="SGeK6AxQmp747ioeDFQ9LJ">只能总指挥下发，参谋不得越权</td></tr>
+      <tr data-page-node-id="GXM4xbYNXhddEv38oFwm7y"><td data-page-node-id="BJUlUStqHQbhAclE4nAvic">冲突</td><td data-page-node-id="zUCKllQiONAzI0u9FhbMGy">三军需求打架无人裁</td><td data-page-node-id="g4JcTzu91cFdELkE3wBqzB">共享资源冲突检测 → 协商 ≤3 轮 → 强制裁决</td></tr>
+      <tr data-page-node-id="zPi4r1QtKDTzf4V7lqMXoW"><td data-page-node-id="ANkYhoUhnQFv5jENJWtv1U">边界</td><td data-page-node-id="BbV88xxwV9vI9HaVyHDFGn">什么活都接</td><td data-page-node-id="eO1DEjNtitNt2ShCQjCHJA">领域外明确拒答（写周报、翻译一律不接）</td></tr>
+      <tr data-page-node-id="sCdyoyC9JtPE3bJmSWhCG7"><td data-page-node-id="CYiPFn8PA1IUL8iKEpQOqJ">轮次</td><td data-page-node-id="rUdIv6b6H4CogeNAdtH65V">单轮一锤子</td><td data-page-node-id="pVH8nQ6vBswtgtq8NdG8PC">多轮增量重规划：改一个条件只重算受影响的参谋</td></tr>
+    </tbody>
+  </table>
+
+  <p data-page-node-id="iFDgV3c5ZvVvWwFpDzjUnh">产出不是"一段回答"，而是<strong data-page-node-id="QHtrEJmcclJsdyB2UVD7vt">可校验、可追溯、可复盘的结构化方案</strong>。</p>
+
+  <h2 data-page-node-id="d6jO51fGU3tRj3oIULKfu8">二、现在做到哪一步（三色看板）</h2>
+
+  <table data-page-node-id="cplUmLFrYUqy9BLB6vssRy">
+    <thead data-page-node-id="yLihHXSoa7TGDHdYUhJWTf">
+      <tr data-page-node-id="CoiMUWOSAQ0tNf56hw5zul"><th data-page-node-id="S0vwzK2tu4ntDObPMf6jUo">层面</th><th data-page-node-id="65yYBDiobe2HUCOzAfY4DC">状态</th><th data-page-node-id="8bpFKmrOnHlcaNKIdfoPvs">说明</th></tr>
+    </thead>
+    <tbody data-page-node-id="EKhbILbs4SONWQjN1lvEt3">
+      <tr data-page-node-id="ScZmYn3k7IHlu7EACHdpYE">
+        <td data-page-node-id="TEjxzOnqzrlkDJthxRS8F6"><span class="dot g" data-page-node-id="cDKJHBDUELFVNV9loaXIDE"></span>架构与规则设计</td>
+        <td data-page-node-id="Yd9m2fpIMyDtRBHTEkcvRc"><strong data-page-node-id="xwvORS2SF87OlYOyocvaz6">100% 完成</strong></td>
+        <td data-page-node-id="zo4dUZVQPnMYYUSt9rzxfO">四角色、双链路、8 条硬规则、5 条收敛判据、7 条契约全部定稿</td>
+      </tr>
+      <tr data-page-node-id="W9wgBxLb3so6KY204kUDku">
+        <td data-page-node-id="5vH0Cw1oDTSamqQB1UxWYQ"><span class="dot y" data-page-node-id="Q6YPopfpupyTnZw8tN3M7K"></span>控制流原型</td>
+        <td data-page-node-id="aVc4sVDTC6P6gEQRDDWQVC"><strong data-page-node-id="U8lTT8CyxtCwaBtR6Ul5pI">约 60%，已实测</strong></td>
+        <td data-page-node-id="Dw2xJjb0efj7dAlgw9aXtD">Mock 模型跑通全链路：12 项验证 + 14 项规则自测<strong data-page-node-id="MVBsHG3LlLZ9pPFEB1U2AR">全部通过</strong></td>
+      </tr>
+      <tr data-page-node-id="7M2qD30gLCJzOrYUUoYqlv">
+        <td data-page-node-id="Nb1hDJ6MZ3irtgEAY6ldg3"><span class="dot r" data-page-node-id="p5xYNkjvmISTmTste9Hp5Q"></span>产品代码</td>
+        <td data-page-node-id="mHfAak7lNlHxUJ2829o1iC"><strong data-page-node-id="wFvl1EPbJA0H6k20TkuGuF">0 行</strong></td>
+        <td data-page-node-id="5PNpAMvE4PkfybzqDe9hrt">目录内目前只有文档、图、测试脚本</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="checklist" data-page-node-id="PzR5Pe6jYVJUUej8VABCcy">
+    <span class="k" data-page-node-id="iPVdMpBhACENS5u4DlMpHC">已实测通过的能力</span>（不是纸面设计）：领域外拒答 ✓　单域快通道 ✓　三参谋并行＋协商＋仲裁 ✓　四类故障注入（方案超限／产物残缺／约束矛盾／参谋失联）全部正确处置、不崩溃 ✓
+  </div>
+
+  <div class="warnbox" data-page-node-id="vKifrOudWrzw35T92c7GV7">
+    <span class="k" data-page-node-id="GIKo7QSGRbvReykuDohajc">尚未验证</span>：真模型下的方案质量、真实兵力池数据、协商的自然收敛（实测是 3 轮封顶强制裁决）。
+  </div>
+
+  <h2 data-page-node-id="GGgM06CJ1FHBDGg4QgxK0k">三、分期、资源与顺序</h2>
+
+  <p data-page-node-id="YEOwoUCHBxRp1mALKS1sgN"><strong data-page-node-id="H0ou19b36CIi85CPEiGOFT">总原则：先底层、后前端。</strong>一期到四期全部是后端能力（图、状态、规则、数据、模型），前端页面框架放到最后一期——底层跑通之前不做界面，避免界面反复返工。</p>
+
+  <table class="phase" data-page-node-id="TGmZv5gtZ04jBtZLsApQBB">
+    <thead data-page-node-id="V4JojiuJNgj8l2vvpZEpzG">
+      <tr data-page-node-id="Y3JOATSPeEGZeFEpCmXN1E"><th data-page-node-id="eeNm9fCH2Y3GTUaVuUG4hS">期</th><th data-page-node-id="n1SK48C9IKECNrH8a4UV4e">内容</th><th data-page-node-id="1Ipt2JwhnDnMP5oVLizoKQ">判据</th></tr>
+    </thead>
+    <tbody data-page-node-id="5Xc5HJpJIyYMOhmXusHJXg">
+      <tr data-page-node-id="aoAefv8pGRfJTPeIkYPycs">
+        <td data-page-node-id="Gq2gud9XFENAi4LVNU4sEu"><strong data-page-node-id="3uixQzzDfw2rIfDiLlaT0Y">第一期（本轮）</strong></td>
+        <td data-page-node-id="jADfHcyoP9qDqDv7NrSrlh">真实兵力池（SQLite）＋ <strong data-page-node-id="HARexyu5FuvStpChN3ZBzm">接线上模型</strong>，跑通最小闭环</td>
+        <td data-page-node-id="YVyO94FD74dPKVMY4LI3Ay">"陆军多少人"答得对、数字可追溯</td>
+      </tr>
+      <tr data-page-node-id="KMmdtFKrP7rZw5joOFRexF"><td data-page-node-id="uXn09CeE9wlc2HBRBo8fcv">第二期</td><td data-page-node-id="U70GL4LBuovNSYNjA9IetW">协商循环落盘 ＋ 完整硬规则执行</td><td data-page-node-id="bhuxGXsutL4gqTTjiAxyne">三军争资源能自动检出并裁决</td></tr>
+      <tr data-page-node-id="BOSmtZAXJhzR2vW4A7vlfn"><td data-page-node-id="c2KlBMDt4lHw54DAt8u6Jh">第三期</td><td data-page-node-id="ORRF61t2b0530piRAopO1l">多轮会话 ＋ 增量重规划</td><td data-page-node-id="21GiYtEoMvUoUuR9mFutYQ">改一个条件只重算受影响参谋</td></tr>
+      <tr data-page-node-id="WXqFtl51b6JBTskHmmHYQB"><td data-page-node-id="lPMzubGrq1j5Tg53HygBA7">第四期</td><td data-page-node-id="ZxF9trhofQCrVCrFN3qJBj"><strong data-page-node-id="vg2R01lsfSqls0WmsmrmEn">本地部署大模型</strong> ＋ 集成、韧性</td><td data-page-node-id="RysROUTcBOQQX576akZCOz">命令行下一轮完整会话可用；本地模型通过 T1–T12 回归</td></tr>
+      <tr data-page-node-id="EVGWubD7RasbGa3YmdvchO"><td data-page-node-id="WarVHGQX9qmC7ACLdWBAs7">第五期</td><td data-page-node-id="WHY5k3zqVHnKMzPEj7B9eG"><strong data-page-node-id="mRR4Rr28UBdAiRJDmg1r4D">MCP 外部服务</strong> ＋ <strong data-page-node-id="OvRVQxPG9rQ7RM2fYlNca4">前端页面框架</strong> ＋ 其他补充</td><td data-page-node-id="tShBFf6cynPWt0mFqldlEs">页面可独立完成一轮会话，方案可直接阅读分享</td></tr>
+    </tbody>
+  </table>
+
+  <p data-page-node-id="1cCED78cFHv0U8oXiyeACy"><strong data-page-node-id="DoTmJYkILMdrQF2RvUYC91">模型路线（已定）</strong>：<strong data-page-node-id="dOMjpm3jZgGJvEs7UnssT8">先接线上模型调试</strong> → 链路与提示词稳定后 → <strong data-page-node-id="qHlXZEVDlzsLq0GFPzanBT">第四期再本地部署</strong>。好处：先用最强模型把"参谋能不能干好活"验证清楚，避免在模型能力和工程问题之间互相甩锅；本地部署后置，届时只做能力回归，不推翻设计。</p>
+
+  <p data-page-node-id="rGUxwpjXRJBkgnPkDkcehd"><strong data-page-node-id="oQRe4rn4Fty4COZsrL5DQc">需要的资源</strong>：① 线上 LLM API 账号（主力＋轻量双档，双档可省约 80% 辅助成本）；② 兵力池种子数据（3 份 JSON，我方出结构、业务方填数）；③ 第四期本地部署算力（待第二期后评估）；④ 第五期前端人力。</p>
+
+  <h2 data-page-node-id="4eBd8VrLpn61oz7qMKXtFh">四、风险（如实说）</h2>
+
+  <ol class="risks" data-page-node-id="d6rl1ETEmevZb0M07uAerE">
+    <li data-page-node-id="0X3G6Q67l5rtpBSI0OPIHe"><strong data-page-node-id="QP0hjWL82UzXGyiGSPsbxW">中途失控</strong>：不做最后一锤子买卖，分期累积验收，每期有独立判据。</li>
+    <li data-page-node-id="5w78VktSHfrw1KLdk46vMk"><strong data-page-node-id="HNyhxGwYNug3mLoizjXKgK">语义层未验证</strong>：真模型下参谋方案质量未知，Mock 只证明了控制流正确——这正是"先接线上模型"要优先解决的事。</li>
+    <li data-page-node-id="Urj0k9GFr55GuLz03RBZEY"><strong data-page-node-id="KgzPUzLDHsplVOKmg8o2CS">成本</strong>：单轮全链路最坏约 24 次主力调用（协商拉满时），最好 4 次。已设三道闸门（轮次 ≤3、只拉冲突方、震荡即退）。</li>
+    <li data-page-node-id="2lFIVfwd209Q8DfxVejdU8"><strong data-page-node-id="Dnv5S7McCKDnlt7JIt2iDq">本地部署的能力落差</strong>：换本地模型后方案质量可能下降。对策：复用同一套 T1–T12 用例做回归，不达标则调整本地模型规格或保留线上／本地混合模式。</li>
+    <li data-page-node-id="P5js4mlhnlfKbLHCc9n0cY"><strong data-page-node-id="Xs9JpTZ96168L81IcA8yPs">前端长期缺席</strong>：一至四期只能用命令行与 trace 日志演示，观感弱。对策：第四期起同步输出结构化 trace 与方案文件，作为没有界面时的验收与讲解依据。</li>
+  </ol>
+
+  <h2 data-page-node-id="kJf9x58I5wm3hyzT676C2D">五、四项已定决策</h2>
+
+  <table class="decision" data-page-node-id="rZYzFtDmbUlI2IFiyAmaqr">
+    <thead data-page-node-id="MZGcP4bhe6VHT9gKyzGOb3">
+      <tr data-page-node-id="GnthqJrIKDFyyiu6zXzv7P"><th data-page-node-id="YM43MxdjFbDr1mxjpGk6e6">#</th><th data-page-node-id="UlcBafX1hvvSv5j35grQY7">事项</th><th data-page-node-id="WOWJdTIgMz0XspG4ajGeba">决策</th><th data-page-node-id="O5dDlPLrODYmylxhi7I2sF">带来的影响</th></tr>
+    </thead>
+    <tbody data-page-node-id="oDVe91K7NaftQhZkQEeNfx">
+      <tr data-page-node-id="y19IHceoRwNf2oE7VX4PAb">
+        <td data-page-node-id="hQjY9i9LFBhoS9R9DRsqXV">1</td><td data-page-node-id="jDU0Z6o5hzWBmqFDvoDsjA">范围与顺序</td>
+        <td data-page-node-id="jj1k3ayDzhodRVdtzE6dle"><strong data-page-node-id="txm9859IdHiRZFsH1WDBG3">先做最小可用（第一期）</strong></td>
+        <td data-page-node-id="yeTRXkUOpPDMAJcvxYHPY6">本期只做真实兵力池＋线上模型＋最小闭环；协商、多轮、本地部署、MCP、前端逐期顺延</td>
+      </tr>
+      <tr data-page-node-id="Be0CDJnP2sRC64lqAA9svW">
+        <td data-page-node-id="4B9tG3W83c52Bq6i83GsxQ">2</td><td data-page-node-id="2VFALM5yIqHHoBrwbYygFk">模型路线</td>
+        <td data-page-node-id="rCmn5mIi9aQoRR43kcUUGy"><strong data-page-node-id="q4X85yiLdZOI88m5sf0CZC">先接线上模型调试，通过后本地部署</strong></td>
+        <td data-page-node-id="eWGs8A5zP2vZsPiEXKjYuB">先用强模型验证语义层可行性；本地部署排在第四期，只需做能力回归，不推翻设计</td>
+      </tr>
+      <tr data-page-node-id="yo2JOCRzLjVGxoCtVJaEA1">
+        <td data-page-node-id="Uh5u4y8zq5Bwet833RxDJZ">3</td><td data-page-node-id="dY8mW9tT4FX5gEc8yZUeIG">验收口径</td>
+        <td data-page-node-id="GxW6EnSFft2lNLhlF1AKjT"><strong data-page-node-id="mIUwR0d8pROZKCqyrFwBIH">链路跑通即可</strong></td>
+        <td data-page-node-id="KFgHbYf3aM9yS4LUi9I8n4">以三类典型链路（拒答／单域快通道／全链路协商）＋ 四类故障注入的行为断言为准，<strong data-page-node-id="VrTLxuDX8GYD1FcczI5FUC">不设精确率／性能量化指标</strong>；若后续要求"兵力问答零差错"，需另开工期</td>
+      </tr>
+      <tr data-page-node-id="a0prmbnwzp8WC4lin78yfP">
+        <td data-page-node-id="eEiesNayF9FFD5hE2QlSDM">4</td><td data-page-node-id="R6aFA1cIRdIbdv3alOj2Qo">工程顺序</td>
+        <td data-page-node-id="NxNb3HbDlrTGFvAKq2DLSc"><strong data-page-node-id="nAPm3lJANKSQ7F3yDflaM5">先做底层框架，跑通后再搭前端页面</strong></td>
+        <td data-page-node-id="AAPhmzL3RP5StcIBYVsBEd">图／状态／规则／数据／模型先打通并以 trace 验收；前端放第五期，避免底层未定就被界面绑死、反复返工</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <footer class="doc-foot" data-page-node-id="MNlrbVao5MYdB4xFW18kyB">
+    <span class="k" data-page-node-id="X02pybcVgR4GSa4yY6TEIL">想看细节</span>：《接手说明（先看这份）.md》给干活的人 · 《项目设计文档（最终版）.md》给评审与存档 · 两份可执行脚本 <code data-page-node-id="Xg8ajPljI79gMNuCZNflyg">langgraph_skeleton_test.py</code>、<code data-page-node-id="9KgzaeOEyJn9VevXZdyunn">rules_convergence.py</code> 可当场演示。
+    <div class="foot-meta" data-page-node-id="3ZyL3pTMy2khV4mkrxKTuW">联合作战指挥多 Agent 设计项目书 · 简易版 · 2026-09-18</div>
+  </footer>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>联合作战指挥多Agent系统 · 控制台</title>
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    <span class="mark">联</span>
+    <div>
+      <h1>联合作战指挥多Agent控制台</h1>
+      <p class="sub">路由 · 指挥 · 参谋 · 协商 · 仲裁 · 终验</p>
+    </div>
+  </div>
+  <!-- 全局导航：四个入口并列，与地图页、兵力池页完全一致。
+       地图不再 target=_blank —— 开新标签是"回不去上一页"的直接原因。 -->
+  <nav class="pnav">
+    <a id="navHome" class="pill pill-link" href="/home">产品首页</a>
+    <a id="navConsole" class="pill pill-link cur" href="/">指挥控制台</a>
+    <a id="navForce" class="pill pill-link" href="/force"
+       title="三军兵力、装备型号、共享资源容量 —— 参谋拟案用的就是这份库">兵力池</a>
+    <a id="navMap" class="pill pill-link" href="/map"
+       title="驻地地理锚点与实时气象/海况/地形（参谋拟案用的就是这份数据）">环境地图</a>
+  </nav>
+  <div class="status">
+    <span id="modelBadge" class="pill">检测中…</span>
+    <span id="busyBadge" class="pill">空闲</span>
+    <span id="clock" class="clock">--:--:--</span>
+    <!-- 版本号：改完前端代码刷新页面，这个数字会变。
+         用来一眼判断"浏览器里跑的是不是最新版"，排查缓存问题时全靠它。 -->
+    <span id="buildTag" class="pill" title="前端版本号（文件更新时间）。改完代码刷新后这个数字会变；不变说明浏览器还在用缓存，按 Ctrl+F5 强制刷新">版本 —</span>
+  </div>
+</header>
+
+<main class="layout">
+
+  <!-- 左栏：会话 -->
+  <section class="col col-left">
+    <div class="card card-grow">
+      <div class="card-head">
+        <h2>指挥席</h2>
+        <div class="head-btns">
+          <button id="histBtn" class="btn btn-ghost btn-sm"
+                  title="翻出以前问过的会话（服务端有记忆，重启也还在）">历史会话</button>
+          <button id="newSession" class="btn btn-ghost btn-sm">新会话</button>
+        </div>
+      </div>
+
+      <!-- 会话记忆：默认收起，点「历史会话」展开 -->
+      <div id="histPanel" class="hist-panel hidden">
+        <div class="hist-head">
+          <span>会话记忆 · 以前问过的都在这</span>
+          <span id="fbStat" class="hist-fb" title="点回答下方的 👍 / 👎 提交反馈">还没有反馈</span>
+          <button id="histClose" class="btn btn-ghost btn-sm">收起</button>
+        </div>
+        <div id="histList" class="hist-list"><div class="log-empty">读取中…</div></div>
+      </div>
+
+      <div id="chatLog" class="chat-log">
+        <div class="hint">
+          输入作战任务开始筹划。<br>
+          <b>单域查询</b> · 陆军现在多少人，多少装备 → 走快通道<br>
+          <b>跨域筹划</b> · 陆海空联合登陆作战，5天内完成投送 → 走全链路<br>
+          <b>增量重规划</b> · 同一会话下追问「运输机运力减半怎么调」
+        </div>
+      </div>
+      <div class="composer">
+        <textarea id="input" rows="3" placeholder="输入任务…（Enter 发送，Shift+Enter 换行）"></textarea>
+        <div class="composer-bar">
+          <span id="threadTag" class="thread-tag">会话 —</span>
+          <span id="memTag" class="thread-tag">记忆 0 轮</span>
+          <button id="send" class="btn btn-primary">下达任务</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 中栏：流水线 + 日志 -->
+  <section class="col col-mid">
+    <div class="card">
+      <div class="card-head">
+        <h2>执行流水线</h2>
+        <span id="elapsed" class="mono dim">0.0s</span>
+      </div>
+      <div id="pipeline" class="steps"></div>
+      <div id="staffNote" class="staff-note hidden"></div>
+    </div>
+
+    <div class="card card-grow">
+      <div class="card-head">
+        <h2>实时日志</h2>
+        <button id="clearLog" class="btn btn-ghost btn-sm">清空</button>
+      </div>
+      <div id="log" class="log"><div class="log-empty">尚未执行</div></div>
+    </div>
+  </section>
+
+  <!-- 右栏：结果 -->
+  <section class="col col-right">
+    <div class="tabs">
+      <button class="tab active" data-tab="plan">决心方案</button>
+      <button class="tab" data-tab="staff">参谋方案</button>
+      <button class="tab" data-tab="bb">协商黑板</button>
+    </div>
+
+    <div id="verdict" class="verdict hidden">
+      <div class="verdict-row">
+        <span id="verdictCode" class="verdict-code">—</span>
+        <span id="verdictMeta" class="mono dim"></span>
+      </div>
+      <ul id="verdictList" class="verdict-list"></ul>
+    </div>
+
+    <div class="card card-grow">
+      <div id="tab-plan" class="tabpane active">
+        <div id="answerBox" class="answer-box hidden"></div>
+        <div id="planBox"><div class="log-empty">执行后显示联合决心方案</div></div>
+      </div>
+
+      <div id="tab-staff" class="tabpane">
+        <div id="staffBox"><div class="log-empty">执行后显示各军种方案</div></div>
+      </div>
+
+      <div id="tab-bb" class="tabpane">
+        <div class="pane-head">
+          <span id="bbSession"></span>
+          <button id="loadBB" class="btn btn-ghost btn-sm">刷新</button>
+        </div>
+        <div id="bbBox"><div class="log-empty">执行后显示协商记录</div></div>
+      </div>
+
+    </div>
+  </section>
+
+</main>
+
+<script src="/static/reload_guard.js"></script>
+<script src="/static/app.js"></script>
+</body>
+</html>

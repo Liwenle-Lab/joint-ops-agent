@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-page-node-id="ISNV3qLUAGkqLi2AvTZzpS">
+<head data-page-node-id="gD6yGvpa6XaHUknOMW63if">
+<meta charset="UTF-8" data-page-node-id="nbgcIeCqpQdpRcc0aiJKgh">
+<title>联合作战指挥多Agent系统 - LangGraph 节点状态图 v2.0</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:"Microsoft YaHei","PingFang SC",sans-serif; background:#f5f7fa; color:#2c3e50; padding:24px; }
+  h1 { font-size:22px; margin-bottom:4px; }
+  .sub { color:#7f8c8d; font-size:13px; margin-bottom:18px; }
+  .legend { display:flex; gap:14px; flex-wrap:wrap; font-size:12px; margin-bottom:16px; }
+  .legend span { display:inline-flex; align-items:center; gap:5px; }
+  .chip { display:inline-block; width:14px; height:14px; border-radius:3px; }
+  .c-main { background:#e74c3c; } .c-light { background:#f39c12; } .c-rule { background:#27ae60; }
+  .c-node { background:#d6eaf8; border:2px solid #2980b9; } .c-loop { background:#fef5e7; border:2px dashed #e67e22; }
+  .panel { background:#fff; border:1px solid #e0e6ed; border-radius:10px; padding:18px; margin-bottom:20px; box-shadow:0 1px 3px rgba(0,0,0,.05); }
+  .panel h2 { font-size:16px; margin-bottom:12px; border-left:4px solid #2980b9; padding-left:10px; }
+  table { width:100%; border-collapse:collapse; font-size:12.5px; }
+  th { background:#eaf2f8; text-align:left; padding:7px 10px; border:1px solid #d4e0ea; }
+  td { padding:6px 10px; border:1px solid #e4ebf1; vertical-align:top; }
+  .tier-main { color:#c0392b; font-weight:bold; } .tier-light { color:#d68910; font-weight:bold; }
+  .tier-zero { color:#1e8449; font-weight:bold; }
+  svg { width:100%; height:auto; display:block; }
+  .note { font-size:12px; color:#7f8c8d; margin-top:8px; }
+</style>
+</head>
+<body data-page-node-id="9IdRY5yEBAFxne0K725z6P">
+<h1 data-page-node-id="10l8Fm2zhe108FVcwzZjuU">联合作战指挥多Agent系统 — LangGraph 节点状态图 v2.0</h1>
+<div class="sub" data-page-node-id="CcuuLq3HCCDdGIcusR3JLQ">State 字段 · API 调用点（主力/轻量双档） · 循环控制 · 生成于 2026-09-15</div>
+
+<div class="legend" data-page-node-id="T5t2x8EKfgtjLtqt4WQukH">
+  <span data-page-node-id="5c2iuoz7vGoXNBZjdoLyXd"><i class="chip c-main" data-page-node-id="45GRtNZ1j3lYhPgaARbrHO"></i>主力档 API（reasoning）</span>
+  <span data-page-node-id="0QqiHkkVEREBvpBLQgoN6R"><i class="chip c-light" data-page-node-id="Ij7e8KLUUrcjv0QHFUhAvF"></i>轻量档 API（haiku 级，省约80%辅助成本）</span>
+  <span data-page-node-id="4a6Y58DmOiGmcCfFMRnDhF"><i class="chip c-rule" data-page-node-id="kwAMNuGQqZtgfuAvh8ECYB"></i>规则引擎节点（0 API）</span>
+  <span data-page-node-id="Xhihx1BpYpFBeAhkwqKiBH"><i class="chip c-node" data-page-node-id="AV0gejrzAwfNjJF2St9VmK"></i>图节点</span>
+  <span data-page-node-id="i5xHsBIQiINRxIcYzKlD7o"><i class="chip c-loop" data-page-node-id="bqc3RKli6QQxXPK6e9DpCh"></i>协商循环边界</span>
+</div>
+
+<div class="panel" data-page-node-id="qZmAwdsStQ2YFnen8YvvU4">
+<h2 data-page-node-id="YAflHSNAU0YOuJHQXqtf2n">一、节点-状态全景图</h2>
+<svg viewBox="0 0 1150 900" xmlns="http://www.w3.org/2000/svg" data-page-node-id="S3RP7nJLEWyAzhS4s4e0co">
+  <defs data-page-node-id="fnCEqWhmmcTHqMURyCt9aK">
+    <marker id="arrow" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto" data-page-node-id="PqJu0HDjOYyuxS6wu5rq9u">
+      <path d="M0,0 L10,4 L0,8 z" fill="#5d6d7e" data-page-node-id="lsxAypW4yX00tWhywqHEsG"/>
+    </marker>
+    <marker id="arrow-red" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto" data-page-node-id="HUuyymIscrlIhTdxbF8yEz">
+      <path d="M0,0 L10,4 L0,8 z" fill="#c0392b" data-page-node-id="iHRzRkX4Ec9H2pXrgnHPYq"/>
+    </marker>
+  </defs>
+  <style>
+    .node { fill:#d6eaf8; stroke:#2980b9; stroke-width:2; rx:8; }
+    .node-rule { fill:#d5f5e3; stroke:#1e8449; stroke-width:2; }
+    .node-reject { fill:#fadbd8; stroke:#c0392b; stroke-width:2; }
+    .node-end { fill:#eaeded; stroke:#7f8c8d; stroke-width:2; }
+    .label { font-size:14px; font-weight:bold; fill:#2c3e50; }
+    .small { font-size:10.5px; fill:#5d6d7e; }
+    .api { font-size:10px; font-weight:bold; }
+    .edge { stroke:#5d6d7e; stroke-width:1.6; fill:none; marker-end:url(#arrow); }
+    .loopbox { fill:#fef5e7; stroke:#e67e22; stroke-width:2; stroke-dasharray:7,4; rx:10; }
+    .looptxt { font-size:11px; fill:#ca6f1e; font-weight:bold; }
+    .statetag { font-size:10px; fill:#117864; font-weight:bold; }
+  </style>
+
+  <!-- 循环边界框（画在底层） -->
+  <rect class="loopbox" x="430" y="470" width="430" height="240" data-page-node-id="RsSP4zWDzoBhSZwapDkFhW"/>
+
+  <!-- START -->
+  <circle cx="60" cy="90" r="16" fill="#2c3e50" data-page-node-id="tmxCyW6P0aYDqcdtpORM2l"/>
+  <text x="60" y="95" text-anchor="middle" font-size="11" fill="#fff" data-page-node-id="1xTsAVlSQQdCWWRLbJ5ZMG">START</text>
+
+  <!-- intent -->
+  <rect class="node" x="130" y="60" width="170" height="62" rx="8" data-page-node-id="FNBjgrPduv5bMkrPRniVjh"/>
+  <text class="label" x="145" y="85" data-page-node-id="ZL33kuQLWFEudk4zhKLzQL">① intent 意图层</text>
+  <text class="small" x="145" y="102" data-page-node-id="p97vjbGu4zTVdRxtjGPatT">读: user_input · 写: task_order, route</text>
+  <text class="api" x="145" y="116" fill="#d68910" data-page-node-id="CiaHwdnPH3gsEo0m5bFhxa">▲API-1 轻量档（分类）</text>
+
+  <!-- 四态路由 -->
+  <text class="small" x="330" y="85" data-page-node-id="5rFYIDk9qopEy4iWggxZsu">四态路由（条件边）</text>
+
+  <!-- reject -->
+  <rect class="node-reject" x="400" y="30" width="170" height="48" rx="8" data-page-node-id="4spQ6yrSiJ5od5NGDh38AH"/>
+  <text class="label" x="415" y="52" data-page-node-id="Yxm3El1fdraLep0wKYABJQ">② reject 拒答</text>
+  <text class="api" x="415" y="70" fill="#1e8449" data-page-node-id="c5CHcO4L3Xjgcg8MBuDqLN">0 API</text>
+  <line class="edge" x1="300" y1="78" x2="398" y2="54" data-page-node-id="MLkmJQfR3PQXEtc8irE1Bo"/>
+
+  <!-- commander -->
+  <rect class="node" x="400" y="130" width="200" height="78" rx="8" data-page-node-id="PHFx4cZ1fJuCNxolfKJJKC"/>
+  <text class="label" x="415" y="155" data-page-node-id="FKGthOIkkZKjaHgN16HmiR">③ commander 联合指挥</text>
+  <text class="small" x="415" y="172" data-page-node-id="TG3dFPSy2WgXD8VD2fmRPJ">写: task_order.constraints(全局约束)</text>
+  <text class="small" x="415" y="187" data-page-node-id="3kgqqR7E6Xm7O4YElvgWa4">blackboard[round0]</text>
+  <text class="api" x="415" y="202" fill="#c0392b" data-page-node-id="LA07sEaoZfVreKnyVF3FES">●API-3 主力档（拆解+约束）</text>
+  <line class="edge" x1="300" y1="100" x2="398" y2="158" data-page-node-id="KUHW1mPTAt566VPbYx9qq6"/>
+  <text class="small" x="318" y="120" data-page-node-id="ZoQjDfi1B0sTAEH2y868RN">full_chain 全链路</text>
+  <line class="edge" x1="485" y1="78" x2="485" y2="128" data-page-node-id="es7ukZCbgOmDCxnIb0t89b"/>
+  <text class="small" x="492" y="108" data-page-node-id="DjRWYDde54Wpxh4FROIrjV">非拒答→继续</text>
+
+  <!-- dispatch -->
+  <rect class="node" x="680" y="135" width="160" height="64" rx="8" data-page-node-id="KIuXkeaPG8QboHuj2aPJK2"/>
+  <text class="label" x="695" y="160" data-page-node-id="ThoAHLduKybCImUKuuRR1t">④ dispatch 分发</text>
+  <text class="small" x="695" y="177" data-page-node-id="dT7OcngT3AEHz3u2iw6IWn">Send 并行 → 3×staff</text>
+  <text class="api" x="695" y="193" fill="#1e8449" data-page-node-id="6HmKSvsNXLaavqWl4IbGiQ">0 API</text>
+  <line class="edge" x1="600" y1="169" x2="678" y2="167" data-page-node-id="XeVJkLuuPWMXGzVHD1HKbO"/>
+  <text class="small" x="612" y="156" data-page-node-id="2QPI22O3EhJCquobcRjGGf">下发任务单</text>
+
+  <!-- staff x3 -->
+  <rect class="node" x="910" y="70" width="200" height="56" rx="8" data-page-node-id="E39fIRKJpVHY3c4wuKDK8p"/>
+  <text class="label" x="925" y="92" data-page-node-id="VlKv5qpbKvpmbSW13imZ8p">⑤a staff·陆军参谋</text>
+  <text class="api" x="925" y="110" fill="#d68910" data-page-node-id="sbOK3i3OOa5iWwjbD7Ul8u">▲查库(轻量)+●拟案(主力)</text>
+  <rect class="node" x="910" y="140" width="200" height="56" rx="8" data-page-node-id="EGnCDv26yguvaRa4qHiTBe"/>
+  <text class="label" x="925" y="162" data-page-node-id="gbclkgsdjAgCAbXYRbQmBT">⑤b staff·海军参谋</text>
+  <text class="api" x="925" y="180" fill="#d68910" data-page-node-id="5kbGCO7KDWMepHxCngTG0a">▲查库(轻量)+●拟案(主力)</text>
+  <rect class="node" x="910" y="210" width="200" height="56" rx="8" data-page-node-id="NpTFVMNLF87hdKKZxukGiU"/>
+  <text class="label" x="925" y="232" data-page-node-id="3RlNLK8NK5YooHl5UC4wpF">⑤c staff·空军参谋</text>
+  <text class="api" x="925" y="250" fill="#d68910" data-page-node-id="LR5cRQyXnwOLWptkboDGED">▲查库(轻量)+●拟案(主力)</text>
+  <line class="edge" x1="840" y1="155" x2="908" y2="105" data-page-node-id="GYCHGrcsCkyJ8oSFncuIDm"/>
+  <line class="edge" x1="840" y1="167" x2="908" y2="167" data-page-node-id="frTVuG1m8zJcQBl3tkJ2hj"/>
+  <line class="edge" x1="840" y1="179" x2="908" y2="230" data-page-node-id="T9uIYHmUZweYzLsT53nkPM"/>
+  <text class="small" x="852" y="218" data-page-node-id="SR1BarQDwUzGYGKEZXQ5DU">Send×3 并行隔离</text>
+
+  <!-- collect -->
+  <rect class="node-rule" x="660" y="300" width="210" height="72" rx="8" data-page-node-id="pgKcz3SWEiR75c8PBC4mwu"/>
+  <text class="label" x="675" y="324" data-page-node-id="gVEVyGAlfekLQxr8Coruvt">⑥ collect 冲突检测</text>
+  <text class="small" x="675" y="341" data-page-node-id="9bbHlthSSFMV65ZoxFLEhD">写: current_asks, conflicts</text>
+  <text class="small" x="675" y="356" data-page-node-id="aTCIVBXXrY0r7WsCpdB2cy">negotiation_round=0</text>
+  <text class="api" x="675" y="370" fill="#1e8449" data-page-node-id="1Jz6bJY8cP2Ecikvx2o53N">0 API · 规则引擎</text>
+  <line class="edge" x1="1010" y1="126" x2="830" y2="300" data-page-node-id="hc4FbQuj5lIuGi9Losaku6"/>
+  <line class="edge" x1="1010" y1="196" x2="872" y2="310" data-page-node-id="CcgsNt873AGksABizuj2KE"/>
+  <line class="edge" x1="1010" y1="266" x2="872" y2="330" data-page-node-id="jLwhDgB45r1BHmMHomoebj"/>
+  <text class="statetag" x="880" y="295" data-page-node-id="fW9QEF5UcaThyDFHDC5rXH">汇总 staff_reports[]</text>
+
+  <!-- 无冲突 → arbitrate -->
+  <line class="edge" x1="660" y1="336" x2="470" y2="336" data-page-node-id="kKBI9jR3bqfWEkdkb4LWqM"/>
+  <text class="small" x="500" y="328" data-page-node-id="rzoKOLFUrpGg0LSiNcxBye">无冲突 → 直接仲裁</text>
+
+  <!-- 协商循环 -->
+  <text class="looptxt" x="445" y="492" data-page-node-id="u4P0TlAC1wrPlUiYvBBmdD">协商子循环（LangGraph 条件边回环）</text>
+
+  <rect class="node" x="450" y="505" width="180" height="72" rx="8" data-page-node-id="G7nGs5h2oaWcyhRo9E9Y9O"/>
+  <text class="label" x="465" y="530" data-page-node-id="tjHnjKMX1wFFkGcH5CHN2N">⑦ negotiate 协商</text>
+  <text class="small" x="465" y="547" data-page-node-id="2FKK6eBidFyortLRMTkNuD">写: current_asks(修订), round+1</text>
+  <text class="small" x="465" y="562" data-page-node-id="P0OT73sk4qcx2i7noMhv5W">blackboard[roundN]</text>
+  <text class="api" x="465" y="575" fill="#c0392b" data-page-node-id="sQ3fZJilZIeM7vmO18UnFz">●API-8 主力档×冲突方数</text>
+
+  <rect class="node-rule" x="680" y="505" width="180" height="72" rx="8" data-page-node-id="xWazXdu37WtDqacAlAKYl9"/>
+  <text class="label" x="695" y="530" data-page-node-id="TBVGYQozo1zCYD1o5VZmPv">⑧ check_convergence</text>
+  <text class="small" x="695" y="547" data-page-node-id="wfPLc4zFzxThAkwaPSusok">收敛判据（机器可判）:</text>
+  <text class="small" x="695" y="562" data-page-node-id="DxWsyCxdYtZDDDQDMzzVdm">无新objection / round≥3 / 震荡</text>
+  <text class="api" x="695" y="575" fill="#1e8449" data-page-node-id="neJCrQ9vCIZD2DSt6bV7oc">0 API · 规则引擎</text>
+
+  <line class="edge" x1="560" y1="372" x2="540" y2="503" data-page-node-id="Sjn5shIehTiVcglm65InXL"/>
+  <text class="small" x="430" y="445" data-page-node-id="8073igg0tteCXL4CMpn5GU">有冲突 → 进入循环</text>
+  <line class="edge" x1="630" y1="541" x2="678" y2="541" data-page-node-id="PjM0n1pFWB5VJ7bUNnPvdT"/>
+  <!-- 回环箭头 -->
+  <path class="edge" d="M 860 545 C 900 600, 700 640, 640 570 C 610 540, 620 510, 632 545" marker-end="url(#arrow-red)" stroke="#c0392b" data-page-node-id="mQXl1QDG97jibbOqn36XQZ"/>
+  <text class="small" x="740" y="625" fill="#c0392b" data-page-node-id="8GIgBRZF1jnalUwqzexHMX">未收敛 → 回环 negotiate（round+1）</text>
+  <line class="edge" x1="770" y1="505" x2="700" y2="400" data-page-node-id="tFmjD6xf41elHTB21hkh7a"/>
+
+  <!-- arbitrate -->
+  <rect class="node" x="430" y="390" width="180" height="66" rx="8" fill="#e8daef" stroke="#7d3c98" data-page-node-id="Ng2b7ZT3rlwDZtwYrFTcnD"/>
+  <text class="label" x="445" y="415" data-page-node-id="aIdxs0KWFAyHAPXES6z85C">⑨ arbitrate 仲裁</text>
+  <text class="small" x="445" y="432" data-page-node-id="YTUmxHcXoYg2DXMaRWCIQF">写: final_plan, final_asks</text>
+  <text class="api" x="445" y="448" fill="#c0392b" data-page-node-id="32eI2LnFJ6XSVGLcaJ3DFE">●API-11 主力档（一次性折中）</text>
+  <line class="edge" x1="540" y1="456" x2="540" y2="503" data-page-node-id="ICmkiFgRIPyljceCWQG75h"/>
+
+  <!-- validate -->
+  <rect class="node-rule" x="200" y="410" width="180" height="76" rx="8" data-page-node-id="oCVtF3PDZPh55yxbQkXlJm"/>
+  <text class="label" x="215" y="433" data-page-node-id="Z2y79XgRIvyZFeBWre62S9">⑩ validate 终验</text>
+  <text class="small" x="215" y="450" data-page-node-id="17CtJlEfloWKNaAg79PWWC">硬规则 + 产物完整性闸门</text>
+  <text class="small" x="215" y="465">(必填章节/数字对回SQL)</text>
+  <text class="api" x="215" y="481" fill="#1e8449" data-page-node-id="34riBdj14IAt9EkTXLpeh6">0 API · 失败走恢复回环</text>
+  <path d="M 200 438 C 105 432, 68 280, 108 180 C 138 115, 300 130, 398 158" stroke="#c0392b" stroke-width="1.8" stroke-dasharray="7,4" fill="none" marker-end="url(#arrow-red)"/>
+  <text class="small" x="40" y="340" fill="#c0392b" font-weight="bold">★分层回退(归因决定回哪层·0API)</text>
+  <text class="small" x="40" y="356" fill="#c0392b">方案违规→③commander 重下发</text>
+  <text class="small" x="40" y="372" fill="#c0392b">产物残缺→⑨arbitrate 局部修复</text>
+  <text class="small" x="40" y="388" fill="#c0392b">约束矛盾→①intent 转人工澄清</text>
+  <text class="small" x="40" y="404" fill="#c0392b">每层 retry≤2，封顶→结构化降级</text>
+  <line class="edge" x1="428" y1="435" x2="382" y2="440" data-page-node-id="Lk6D6QcrNS5w6Cqj2pd9qt"/>
+
+  <!-- END -->
+  <rect class="node-end" x="200" y="540" width="150" height="50" rx="8" data-page-node-id="CHtjpyKGVYMnoQbE93SwWi"/>
+  <text class="label" x="240" y="570" data-page-node-id="xaUFfJK0iD9b98IFLye678">END · 输出方案</text>
+  <line class="edge" x1="290" y1="476" x2="290" y2="538" data-page-node-id="mecvDF8C1aeMCU3o30vGJv"/>
+
+  <!-- 单域快通道旁路 -->
+  <path class="edge" d="M 215 122 C 190 200, 160 300, 250 405" stroke-dasharray="6,4" data-page-node-id="jrKv6xKREe0yYEuV6df508"/>
+  <text class="small" x="90" y="280" fill="#2980b9" data-page-node-id="uu6lJXhANQELJgg5rpEAtp">single_domain 快通道:</text>
+  <text class="small" x="90" y="296" fill="#2980b9" data-page-node-id="fq85x8gA5AegnI8elRKruX">跳过 ③④⑥⑦⑨</text>
+  <text class="small" x="90" y="312" fill="#2980b9" data-page-node-id="CXEoKX4S1o5qGCaTQkLL9Q">单参谋→查库→直接作答</text>
+
+  <!-- State 面板 -->
+  <rect x="130" y="640" width="890" height="230" rx="10" fill="#eaf7f1" stroke="#117864" stroke-width="2" data-page-node-id="w3UX4YGuvxEkBFyMOZlMJq"/>
+  <text class="statetag" x="150" y="668" font-size="13" data-page-node-id="UFPJkQRtXHMm4nB19khFkd">JointOpsState（LangGraph TypedDict，全图共享）</text>
+  <text class="small" x="150" y="692" data-page-node-id="SCA8cTddp2uZr8NBjSK5gG">user_input · task_order{domain,type,constraints} · route(四态) · staff_reports[](add-reducer 并行汇总)</text>
+  <text class="small" x="150" y="712" data-page-node-id="Pm7E82pHeXQnwg6opZnOcF">current_asks(协商覆盖式更新) · conflicts[] · ★negotiation_round(循环控制字段) · oscillating(防震荡标志)</text>
+  <text class="small" x="150" y="732" data-page-node-id="mWPAREVT6DWSVMDFh6D3cm">blackboard[](add-reducer 协商黑板书·只增) · converged · final_plan · final_asks · api_calls[](双档计数)</text>
+  <text class="small" x="150" y="752" fill="#c0392b" font-weight="bold">retry_count(恢复回环封顶≤2) · validation_failed · failure_reason · info_gap(参谋失败降级标注)</text>
+  <text class="statetag" x="150" y="762" data-page-node-id="dgSMbRnNFwexJhGMKWA3Cy">★ 循环实现：check_convergence 返回 "negotiate" → 条件边回环；返回 "validate" → 跳出。LangGraph 代码：</text>
+  <text class="small" x="150" y="782" data-page-node-id="ZDE883EKnHR1ToFrHbnMcc">g.add_conditional_edges("negotiate", check_convergence, {"negotiate":"negotiate", "validate":"arbitrate"})</text>
+  <text class="statetag" x="150" y="812" data-page-node-id="hlGr3YFBBazKDtjuRHINhY">并行实现：dispatch 节点返回 [Send("staff", {...}) × N]，N=need_joint?3:1（参与者裁剪）</text>
+  <text class="statetag" x="150" y="842" data-page-node-id="TDayZPHfFnjyMJFn2DdOjJ">双档模型：所有 create 调用包 with_retry（429/529 指数退避）——API-1~14 详见下方调用点总表</text>
+</svg>
+</div>
+
+<div class="panel" data-page-node-id="rKovNMfKyxZNj8ASM2uptA">
+<h2 data-page-node-id="IRAfY3BeRBIKYmlrII75Ma">二、API 调用点总表（主力/轻量双档）</h2>
+<table data-page-node-id="crwOnOJFGsCP5C3i9pOmNz">
+<tr data-page-node-id="gafVd5ic4tNtqIqXBqGMSs"><th data-page-node-id="0A8kI0iteAx1pAF8SnFlH8">编号</th><th data-page-node-id="tEDTokbTYP5wC42gmMlh8X">节点</th><th data-page-node-id="mCgRjzyE9mO0ToCzzE8ldX">用途</th><th data-page-node-id="4UZBoXpRj2UrEWxLqFrLAJ">档位</th><th data-page-node-id="FeyCvoAz402rFphO1vf59f">次数/全链路</th><th data-page-node-id="WC1UwGbD6Qu0nrVpECC5Hf">能否省略</th></tr>
+<tr data-page-node-id="ZT6AMxoWATG3Hs7k2X7A1Y"><td data-page-node-id="g3rCNbW6tmxDttb9kHUeBH">API-1</td><td data-page-node-id="4u8Kbnc7eYnCc51OaD4tzQ">intent</td><td data-page-node-id="7zowhvaFDSFE5W06T9DkxF">意图分类→结构化任务单</td><td class="tier-light" data-page-node-id="Q2Tnh2liVLZC0PawOn4aED">轻量 haiku</td><td data-page-node-id="0bewLJo5NFoma76a0ZfGOF">1</td><td data-page-node-id="0FwP78WyJYqg8V1aUR6pZE">否（入口）</td></tr>
+<tr data-page-node-id="2vHjIbs3KHPeNet8Mzx5wm"><td data-page-node-id="iThMSEMw2oI7tbQ2XvKbwp">API-2</td><td data-page-node-id="Tae2ILtCgZZ4lFF83kLiC1">intent</td><td data-page-node-id="JZmfwzInXLb5dEFa9yj3T3">领域本体消歧（"旅/支队"落实体）</td><td class="tier-light" data-page-node-id="4tRDlk76xIJJkmahZNLH8A">轻量 haiku</td><td data-page-node-id="nuFHZCQ3t0a54flJtTOkqO">0–1</td><td data-page-node-id="6qBFbS2vvYEbnrwLjYlLAD">简单句可省</td></tr>
+<tr data-page-node-id="SJzbreksXxkEBvSx5uKGuW"><td data-page-node-id="549bkUfsN8P5YeJPnOOYND">API-3</td><td data-page-node-id="SmgfkrYBAeX7vVI7ELEGZ3">commander</td><td data-page-node-id="wH0eXzXTQ4JEzYU9sszZkp">任务拆解+全局约束下发</td><td class="tier-main" data-page-node-id="ELohh7eXMMpFfEvoURbQGV">主力</td><td data-page-node-id="a5Q9uiXErFU5pvfc6ObDrv">1</td><td data-page-node-id="44tbu8NwaTWg3HaOLUSbvl">否</td></tr>
+<tr data-page-node-id="7epAie1iOq7tWYLXwjXPuG"><td data-page-node-id="FDxwFIK2DuojHfletKbDZr">API-4</td><td data-page-node-id="1cmG9tFpCaZ3zUBoNMbSuf">staff×3</td><td data-page-node-id="il733e7O9LGWJCxyTm57If">兵力池 SQL 查询前的问题改写</td><td class="tier-light" data-page-node-id="34cLJ1QV93Zdx3rstoLDl7">轻量 haiku</td><td data-page-node-id="KjTd2lsTdBRE7piGa7vnAQ">≤3</td><td data-page-node-id="kIkyHCRp6owFETRr4jeOTn">模板匹配可省</td></tr>
+<tr data-page-node-id="CmvaGAsnl9fzi3qT5rXVsz"><td data-page-node-id="qZtshIQEP37ONOFbskzXcN">API-5</td><td data-page-node-id="GYYzcEwdsjc4cWl5X4GolH">staff×3</td><td data-page-node-id="B00spvEHYh2fn6vbAs32ds">域内拟案（读简报+库内数据）</td><td class="tier-main" data-page-node-id="4uZVDQOqriWGFgjgSj2KUk">主力</td><td data-page-node-id="jziSJPyeatwIeNBvUyWSYc">≤3</td><td data-page-node-id="sm3o7LUyjAxowRp7RjAusU">否</td></tr>
+<tr data-page-node-id="B2PA0WoceBfHdIUfGZtMiI"><td data-page-node-id="oBWUUqJK5V8XWsUAZLVACu">API-6</td><td data-page-node-id="kGHaRt2DxDXwIv7U7G5RRr">collect</td><td data-page-node-id="34aBoKg0dIsVpGfamcgCW1">冲突检测</td><td class="tier-zero" data-page-node-id="9yALTCZteRSUvNcRWxkrtR">0 API</td><td data-page-node-id="VBnHh4d2bSxIOpEcoPaGVx">—</td><td data-page-node-id="MQ3DLugtDm59JY5ZwG5wUo">规则引擎</td></tr>
+<tr data-page-node-id="ikah9Ff9DqbSmcxcTOInam"><td data-page-node-id="BVnT6qk5PYdZB6DuFccBt9">API-7</td><td data-page-node-id="W0oAi1rYGMADpD9sBfYH0h">negotiate</td><td data-page-node-id="VnLjLJ4O4BnZoCIEg91ZMW">让步修订（仅冲突方）</td><td class="tier-main" data-page-node-id="xIOk3gBiIkHa9C0F6cNyA6">主力</td><td data-page-node-id="DnPR6zuOxfFjQukyg9J8qf">≤3轮×≤3方</td><td data-page-node-id="5JdWZkvriCwA1NITVygrrh">成本热点🔴🔴</td></tr>
+<tr data-page-node-id="a40t6rDzrD3GekYGshOmmh"><td data-page-node-id="aWIbfjgSPwvcUgTx8T2zDp">API-8</td><td data-page-node-id="BJ5sy1laSeae3R9S8dSJbZ">check_convergence</td><td data-page-node-id="lCjNw20CnUIv4Twrw9DC8X">收敛判据</td><td class="tier-zero" data-page-node-id="3OpveEvK0B3NCFvL8gGtmp">0 API</td><td data-page-node-id="3sRKnT4Stiwdc4GKJrFwXo">—</td><td data-page-node-id="ZNOLc9PTQymlE8VezVxQ5h">规则引擎</td></tr>
+<tr data-page-node-id="cIwmEAi6eHXxLFTenqZkoq"><td data-page-node-id="IAmKGNcpEpELymhTXi6msi">API-9</td><td data-page-node-id="6xcxnC43LPbwJNDSopYTos">arbitrate</td><td data-page-node-id="tIk9Dc3NPY2qTdA72h9plX">一次性折中裁决</td><td class="tier-main" data-page-node-id="3jGN0SO1PSCmZSzn4wfml1">主力</td><td data-page-node-id="TYAObTMLj0OKBITTr0Dubz">1</td><td data-page-node-id="95J5pk58LIKtDmFc9U3G79">无冲突可省</td></tr>
+<tr data-page-node-id="pleBq15uRjrjyKtTKnSHGq"><td data-page-node-id="Gr0HTACYLzdPCM6FJFWx6l">API-10</td><td data-page-node-id="QTKOp3GZYaMA8vLXn9BL0z">validate</td><td data-page-node-id="MduD9vL2MxvPPrO3GZlXIm">硬规则终验</td><td class="tier-zero" data-page-node-id="mWWQ3wFz2dmH0A6osH13ef">0 API</td><td data-page-node-id="AKnODxrBMbrzFqdRyq3oYE">—</td><td data-page-node-id="4kJROlXTUkIL85Bfv47Hsy">规则引擎</td></tr>
+<tr data-page-node-id="FAQoQGgGGgPt8DteCBkM1W"><td data-page-node-id="MSPVC8X6ZJE6g1JYgRWJhj">API-11</td><td data-page-node-id="X7R8ZRYywzZnBhel923TCL">最终输出</td><td data-page-node-id="CTcwMBRovmEpPZ1EwpVhM0">方案成文（时序表/风险/备选）</td><td class="tier-main" data-page-node-id="21kIzVFP6GRPBZR6cOxGFE">主力</td><td data-page-node-id="bEORvyvWTAh9trRO5bmwCw">1</td><td data-page-node-id="jT8ffYg9yEEmoQtBuDgAzj">否</td></tr>
+<tr data-page-node-id="IXkT6KJCoqPvug3RCf9Nug"><td data-page-node-id="MeArtkKajAArwh30X4diRJ">API-12</td><td data-page-node-id="xGY4MeDLvRMAnDh0wTXzi5">多轮增量</td><td data-page-node-id="66Hr508fyuGGvhpjJlENpC">槽位变更→增量重规划简报生成</td><td class="tier-light" data-page-node-id="hDNv0B0yGm0utkCHLdGWyC">轻量 haiku</td><td data-page-node-id="KwV6HvY3tWsotTb37r4fy0">按需</td><td data-page-node-id="QesZ5QTtBi7YccjvblGsh8">否</td></tr>
+<tr data-page-node-id="EjCY9pHGaesEE5vD71izDN"><td data-page-node-id="cjb9WFfK9VwO3jgg8010wf">API-13</td><td data-page-node-id="jqwPKTAB5WajLeqvrqiC1A">记忆选取</td><td data-page-node-id="2rsJDZwaun8QcArEipe70P">多轮历史相关性筛选（注入简报）</td><td class="tier-light" data-page-node-id="dqmllurPArxHyltMI3VRvq">轻量 haiku</td><td data-page-node-id="LMT2aNEU6yeac8GjnsF3wK">每轮1</td><td data-page-node-id="K3tjgXvIAGdOUvtYkG0GVB">可缓存</td></tr>
+<tr data-page-node-id="NA8fp9lCA2oYxywedQUr0f"><td data-page-node-id="v69AgxxcfAzOc9zf8jOkMW">API-14</td><td data-page-node-id="sh3Y1X7KaDytk8Vn1W9C2i">上下文压缩</td><td data-page-node-id="FyOxGx1CGKJnkU64dHyLJS">协商史超长时四层压缩</td><td class="tier-light" data-page-node-id="3XylvkUNR66iYFOjChXf71">轻量 haiku</td><td data-page-node-id="NnqIFZunGO84w3DEQvAGza">触发式</td><td data-page-node-id="RHWB4FCNhxoH3bhI6pe3y3">可阈值化</td></tr>
+</table>
+<p class="note" data-page-node-id="vWmJv7krTUWHZCPDBvqFhK">双档结论：3 个判定节点（冲突检测/收敛判据/硬规则终验）永远 0 API；辅助调用（API-1/2/4/12/13/14）全部走轻量档，相比全主力档省约 80% 辅助成本。最坏全链路 ≈24 次主力调用（协商 3 轮封顶），单域快通道仅 ≈2–3 次。</p>
+</div>
+
+<div class="panel" data-page-node-id="2Gi8FQAqSieYfjJVoHfZCy">
+<h2 data-page-node-id="E2ucqt8qRPRp1xaZGD4FdV">三、可执行性验证结果（Mock 模型实跑）</h2>
+<table data-page-node-id="DMTvdAN1Ucu6rz4Bo9YHM0">
+<tr data-page-node-id="zOFvDa8PdzaxzBWmxtHh8G"><th data-page-node-id="CfTmcUlvGPBaEflAeZGTAZ">验证点</th><th data-page-node-id="ei3RKAofq6IPWweBSDTwDe">内容</th><th data-page-node-id="c7Pdw43SohjyaIhBEy2aYz">结果</th></tr>
+<tr data-page-node-id="HvyFYWBoIwfiHBRGtz4rO2"><td data-page-node-id="hORIjE4yFX7icf4M2vI1yx">T1</td><td data-page-node-id="72bMpgR2tC045bR7j94A3j">StateGraph 图编译（节点/边一致性校验）</td><td style="color:#1e8449;font-weight:bold" data-page-node-id="9iAosu8Sowr3FAhDHAGj6y">PASS</td></tr>
+<tr data-page-node-id="lYxssTWCDGnYoOHUCVaIPk"><td data-page-node-id="dC6HSDxhkkQjsLRRAUP1sc">T2</td><td data-page-node-id="AdsmLhJHkiBrM7NB1uHWs7">四态路由：拒答 / 单域快通道 / 全链路 分流正确</td><td style="color:#1e8449;font-weight:bold" data-page-node-id="oE3UP5jQmzExwNCGBv5AcI">PASS（三用例实测）</td></tr>
+<tr data-page-node-id="uChcoEAlBHkSRhrwZTdyTw"><td data-page-node-id="S3HpU9dYG1H3xg67bJ4oGi">T3</td><td data-page-node-id="W53YRCHXsBgVC6H6KHEgUh">Send 并行：三参谋隔离执行、staff_reports 正确汇总</td><td style="color:#1e8449;font-weight:bold" data-page-node-id="Q1xF3kJVfezuCIbvfDx8WJ">PASS（3 份报告）</td></tr>
+<tr data-page-node-id="vVegP9ZRAfXHeZK6qyGdIh"><td data-page-node-id="BYPFJjbDNymrh4WyoP1Npf">T4</td><td data-page-node-id="XYYUZKKYyWNQmk7ebwdHAa">协商循环：冲突触发 → 收敛/封顶(round≤3) → 跳出，无死循环</td><td style="color:#1e8449;font-weight:bold" data-page-node-id="9WN5cBXDE6fM8yTWSSpM2x">PASS（3 轮封顶）</td></tr>
+<tr data-page-node-id="WLG80GzHX13C3oLVpBfKXm"><td data-page-node-id="wfdCHXYASxSzz1S8HPEjGq">T5</td><td data-page-node-id="rnpofGxEgwFtbMIp9Rj9ny">双档计数：主力/轻量调用分开统计生效</td><td style="color:#1e8449;font-weight:bold" data-page-node-id="vIP0RdaokWPODVCrV9rWWb">PASS（主力15/轻量7）</td></tr>
+<tr data-page-node-id="OaBo57qqZRCxWsDm2ZU4ov"><td data-page-node-id="a2fUSqX0jBqfiElCQAKASD">T6</td><td data-page-node-id="QafioeAEZ71d0BoiDlnT4f">硬规则终验 0 API 且拦截有效</td><td style="color:#1e8449;font-weight:bold" data-page-node-id="fbsnddAODZu3huDYLbJcFE">PASS</td></tr>
+<tr><td style="color:#c0392b;font-weight:bold">T7★</td><td>失败恢复回环：注入校验故障 → validate 拦截 → 回 commander 重下发 → 二次通过</td><td style="color:#1e8449;font-weight:bold">PASS（v2.1 实测）</td></tr>
+<tr><td style="color:#c0392b;font-weight:bold">T8★</td><td>产物完整性闸门：注入残缺方案（缺"风险"章节）→ 检出 → 恢复完整</td><td style="color:#1e8449;font-weight:bold">PASS（v2.1 实测）</td></tr>
+<tr><td style="color:#c0392b;font-weight:bold">T9★</td><td>重试封顶降级：注入必败故障 → 2 次恢复后输出 FAILED_VALIDATION_DEGRADED 结构化报告，不崩溃</td><td style="color:#1e8449;font-weight:bold">PASS（v2.1 实测）</td></tr>
+<tr><td style="color:#c0392b;font-weight:bold">T10★</td><td>参谋失败降级：海军失联 → 两军种规划 + 方案标注"信息缺口"</td><td style="color:#1e8449;font-weight:bold">PASS（v2.1 实测）</td></tr>
+<tr><td style="color:#c0392b;font-weight:bold">T11★</td><td>分层回退·升级：约束矛盾 → 归因=constraint_conflict → 回 intent → 转人工澄清（NEED_USER_CLARIFICATION，不硬重试）</td><td style="color:#1e8449;font-weight:bold">PASS（v2.2 实测）</td></tr>
+<tr><td style="color:#c0392b;font-weight:bold">T12★</td><td>三层回退均被实际走到：intent / commander / arbitrate</td><td style="color:#1e8449;font-weight:bold">PASS（v2.2 实测）</td></tr>
+</table>
+<p class="note" data-page-node-id="lwVZ7wgwTEyvXmtcETFLvg">v2.0 实测修复的 2 个结构性 bug：① staff 节点同时挂条件分发边与出边会无限自旋 → 改为独立 dispatch 分发节点；② 单域快通道误入仲裁节点 → collect 条件边增加快通道旁路。v2.1（本轮"优化"）按 s20 闭环对照补强：★validate 失败不再 assert 崩溃，改走失败恢复回环（retry≤2 封顶降级）；★新增产物完整性闸门（必填章节/数字对回SQL）；★参谋失败降级为其余军种规划+标注信息缺口。系统循环由 2 个增至 4 个：协商回环 / 参谋自纠 / 失败恢复回环 / 多轮会话闭环(checkpointer)。七用例双档实测：主力档 123 次、轻量档 34 次（含故障恢复重跑）。测试脚本 langgraph_skeleton_test.py v2.1（同目录），故障经任务单 fault 字段注入。
+</div>
+</body>
+</html>

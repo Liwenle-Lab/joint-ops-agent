@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-page-node-id="LlQgannALcBFHp84JumNwy">
+<head data-page-node-id="kQDPvSwBIkSswTk7eQsUeY">
+<meta charset="UTF-8" data-page-node-id="fi76HPH9n7aCUVdRHzDtpK">
+<meta name="viewport" content="width=device-width, initial-scale=1.0" data-page-node-id="eFuVHrAAAEqszeP6D2lEgh">
+<title>联合作战指挥多Agent系统 · 产品首页</title>
+<style>
+  :root{
+    --bg-page:#F7F7F5; --bg-card:#FFFFFF; --bg-sub:#F1EFE8;
+    --bd:rgba(0,0,0,.10); --bd-2:rgba(0,0,0,.18);
+    --tx:#2C2C2A; --tx-2:#5F5E5A; --tx-3:#888780;
+    --accent:#534AB7; --accent-soft:#EEEDFE;
+    --army:#3B6D11; --navy:#185FA5; --air:#0F6E56;
+    --r:12px;
+    --sans:"PingFang SC","Microsoft YaHei","Hiragino Sans GB",system-ui,-apple-system,sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg-page);color:var(--tx);font-family:var(--sans);
+    font-size:14px;line-height:1.65;font-weight:400;-webkit-font-smoothing:antialiased;
+    min-height:100vh;display:flex;flex-direction:column}
+  a{color:inherit;text-decoration:none}
+
+  /* 顶栏，与控制台一致 */
+  .topbar{display:flex;align-items:center;justify-content:space-between;
+    padding:14px 28px;border-bottom:1px solid var(--bd);background:var(--bg-card)}
+  .brand{display:flex;align-items:center;gap:14px}
+  .mark{width:40px;height:40px;border-radius:10px;background:var(--accent);color:#fff;
+    display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:500}
+  .brand h1{font-size:17px;font-weight:500;line-height:1.2}
+  .brand p{font-size:12px;color:var(--tx-3);margin-top:2px}
+  .pill{font-size:12px;padding:6px 12px;border:1px solid var(--bd);border-radius:999px;color:var(--tx-2)}
+  .pill-link{text-decoration:none;display:inline-flex;align-items:center}
+  .pill-link:hover{border-color:var(--accent);color:var(--accent)}
+  /* 全局导航：四个页面（首页/控制台/兵力池/地图）用的是同一排，当前页高亮 */
+  .pnav{display:flex;align-items:center;gap:6px;margin-left:auto}
+  .pnav .cur{color:var(--accent);font-weight:500;border-color:var(--accent);background:var(--accent-soft)}
+
+  /* 主区 */
+  main{flex:1;max-width:1040px;width:100%;margin:0 auto;padding:40px 28px 28px}
+  .hero{text-align:center;margin-bottom:36px}
+  .hero .tag{display:inline-block;font-size:12px;color:var(--accent);
+    background:var(--accent-soft);padding:5px 14px;border-radius:999px;margin-bottom:16px}
+  .hero h2{font-size:30px;font-weight:500;letter-spacing:.5px}
+  .hero p{color:var(--tx-2);margin-top:12px;font-size:15px}
+  .hero p b{color:var(--tx)}
+
+  /* 三个大入口：控制台 / 兵力池 / 地图 —— 三者并列，不要再藏成控制台的子页签 */
+  .entries{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-bottom:40px}
+  @media (max-width:900px){ .entries{grid-template-columns:1fr} }
+  .entry{background:var(--bg-card);border:1px solid var(--bd);border-radius:var(--r);
+    padding:26px;display:flex;flex-direction:column;gap:10px;transition:.15s;
+    position:relative;overflow:hidden}
+  .entry:hover{border-color:var(--accent);box-shadow:0 6px 20px rgba(83,74,183,.10);transform:translateY(-2px)}
+  .entry .ico{width:46px;height:46px;border-radius:10px;display:flex;align-items:center;
+    justify-content:center;font-size:22px;color:#fff}
+  .entry.console .ico{background:var(--accent)}
+  .entry.map .ico{background:var(--navy)}
+  .entry.force .ico{background:var(--army)}
+  .entry h3{font-size:18px;font-weight:500}
+  .entry p{color:var(--tx-2);font-size:13px;min-height:42px}
+  .entry .go{margin-top:auto;font-size:13px;color:var(--accent);font-weight:500}
+  .entry .go::after{content:" →";}
+
+  /* 功能 + 步骤 */
+  .grid2{display:grid;grid-template-columns:1.3fr 1fr;gap:20px}
+  .card{background:var(--bg-card);border:1px solid var(--bd);border-radius:var(--r);padding:24px}
+  .card h4{font-size:15px;font-weight:500;margin-bottom:14px;padding-left:10px;
+    border-left:3px solid var(--accent)}
+  .feat{display:flex;gap:12px;padding:10px 0;border-bottom:1px dashed var(--bd)}
+  .feat:last-child{border-bottom:none}
+  .feat .dot{flex:none;width:8px;height:8px;border-radius:50%;background:var(--accent);margin-top:7px}
+  .feat b{font-weight:500}
+  .feat span{color:var(--tx-2);font-size:13px}
+  ol.steps{list-style:none;counter-reset:s}
+  ol.steps li{counter-increment:s;display:flex;gap:12px;padding:9px 0;color:var(--tx-2);font-size:13px}
+  ol.steps li::before{content:counter(s);flex:none;width:22px;height:22px;border-radius:50%;
+    background:var(--accent-soft);color:var(--accent);display:flex;align-items:center;
+    justify-content:center;font-size:12px;font-weight:500}
+  .note{margin-top:14px;font-size:12px;color:var(--tx-3);text-align:center}
+  footer{border-top:1px solid var(--bd);padding:16px 28px;text-align:center;
+    color:var(--tx-3);font-size:12px;background:var(--bg-card)}
+  @media(max-width:760px){.entries,.grid2{grid-template-columns:1fr}}
+</style>
+</head>
+<body data-page-node-id="Ogi028sObY7hOKI1y5OyMb">
+
+<header class="topbar" data-page-node-id="IqpCoLAVgdrHDBHQfRECKT">
+  <div class="brand" data-page-node-id="AXMRUbQXJz0VVmrpN1AWvF">
+    <span class="mark" data-page-node-id="bvrBlc4cHCGF51xZ5axkVw">联</span>
+    <div data-page-node-id="xND4wSSayE5fdBndkBdleH">
+      <h1 data-page-node-id="b8KjRke8eU5G5wJXrn0gGZ">联合作战指挥多Agent系统</h1>
+      <p class="sub" data-page-node-id="Dp7xm7vHP4wTh2CFfTEkLg">多Agent 联合筹划 · 实时环境感知 · 作战环境地图</p>
+    </div>
+  </div>
+  <nav class="pnav">
+    <a id="navHome" class="pill pill-link cur" href="/home" data-serve="/home">产品首页</a>
+    <a id="navConsole" class="pill pill-link" href="/" data-serve="/" data-page-node-id="caBnrlL3L7BT1FluGOGF7s">指挥控制台</a>
+    <a id="navForce" class="pill pill-link" href="/force" data-serve="/force">兵力池</a>
+    <a id="navMap" class="pill pill-link" href="/map" data-serve="/map">环境地图</a>
+  </nav>
+</header>
+
+<main data-page-node-id="dnh63KuyGrfhTmGMbZr4wh">
+  <section class="hero" data-page-node-id="KCPPoIHBHnUkiGbjDHZ6ei">
+    <span class="tag" data-page-node-id="PaD2D5FymXykVAItpuXFam">产品首页</span>
+    <h2 data-page-node-id="XiEzwHjQDwfRIXpaqzWLIZ">一句话下达任务，系统替你筹划</h2>
+    <p data-page-node-id="kurKCD5w5eZOVA4ZC9vKPG">用自然语言描述作战任务，<b data-page-node-id="nFCEwJNNd8KpN44lxuK2Sp">陆/海/空三参谋并行拟案 → 仲裁协商 → 终验</b>；<br data-page-node-id="4iSzCvqC69F8eKImR8QvEH">
+       每轮筹划自动注入<b data-page-node-id="8B9toY12HyaZH9b3nGfESA">驻地实时环境</b>，并在地图上可视化。</p>
+  </section>
+
+  <section class="entries" data-page-node-id="cNQxmdun9q1zII2HIrvUbK">
+    <a class="entry console" href="/" data-serve="/" data-page-node-id="nWb1H9i9FgFOi7EzymWTk3">
+      <div class="ico" data-page-node-id="yX8bMC6hkZgUddwPNvvrQO">⌘</div>
+      <h3 data-page-node-id="fDbzP6HN7GzvYMTLu6cIh1">指挥控制台</h3>
+      <p data-page-node-id="PlzKPstenOT8lAKwcwv88N">和系统进行对话式筹划：下达任务、看执行流水线、查方案与溯源、看协商黑板。</p>
+      <div class="go" data-page-node-id="ZBa7CEU18EUyzT3VkaRMgr">打开控制台</div>
+    </a>
+    <a class="entry force" href="/force" data-serve="/force">
+      <div class="ico">▤</div>
+      <h3>兵力池</h3>
+      <p>三军员额、装备型号、共享资源容量一屏看全 —— 参谋拟案取数的那同一个库。</p>
+      <div class="go">查看兵力池</div>
+    </a>
+    <a class="entry map" href="/map" data-serve="/map" data-page-node-id="uYHMym6MCxqdgkDgC87zCH">
+      <div class="ico" data-page-node-id="ZyoAwrn27sCCokYxYbEvc0">🗺</div>
+      <h3 data-page-node-id="uf2wEIOXljherzNb3LgDQy">作战环境地图</h3>
+      <p data-page-node-id="jixe9gYNRW5dwObBUpXbOy">11 个驻地锚点 + 实时气象 / 海况 / 地形面板，参谋拟案用的就是这份数据。</p>
+      <div class="go" data-page-node-id="J3iD4OFD9N4BmzuvPe9sVO">打开地图</div>
+    </a>
+  </section>
+
+  <section class="grid2" data-page-node-id="cwBsain1umOCmSjGKJcdbx">
+    <div class="card" data-page-node-id="eJftZ3vRnX4izAG5zmAfWL">
+      <h4 data-page-node-id="0GgpeuMcZA8yyf4661QGTC">这个产品能做什么</h4>
+      <div class="feat" data-page-node-id="sN2O3HUO92Yx23Bcou42Nu"><span class="dot" data-page-node-id="tUDNmeE3WYrqu6akrNBMJU"></span><div data-page-node-id="qalBvrez7ToqAdprCf4qGn"><b data-page-node-id="5Y7kyigAOcbpdDccTVmlr6">自然语言下达任务</b><br data-page-node-id="lMhQmjuUJsqZsvt7buqIK6"><span data-page-node-id="jxHmuJjzzExjmWrQXXsSa9">「陆海空联合登陆，5 天内完成投送」一句话即可启动全链路。</span></div></div>
+      <div class="feat" data-page-node-id="qOluPffgMY4YfvLNVFQGbP"><span class="dot" data-page-node-id="A2ZFqQrCSI6PrzNx2h2Ric"></span><div data-page-node-id="17a4aCPYiUqTOvCQPC8EwZ"><b data-page-node-id="2Mc1Xv2FYObl7KFU3SvBEv">三参谋并行 + 仲裁协商</b><br data-page-node-id="nkO5XaBR79OMRwTk7pQOSN"><span data-page-node-id="9iAlXJv8eonmFQq4Kx6yrV">陆/海/空各自拟案，仲裁节点合成最终决心并补回兵力来源。</span></div></div>
+      <div class="feat" data-page-node-id="BPZNDDX4g8AmBlNzu3EdIo"><span class="dot" data-page-node-id="CpTiY3stn8OqMT2E8uHkre"></span><div data-page-node-id="v8EgnOCffojd6cvWHSQSWx"><b data-page-node-id="2JphWwY62eXnKzLDPhFvfs">每个数字可溯源</b><br data-page-node-id="wfGJ30ZBGdK7WD69Q5eDpT"><span data-page-node-id="pF1T2xcPScBOIw21Ylkcxr">方案里每个数字都带来源标记（兵力来自 sql，环境来自 env），可查可信。</span></div></div>
+      <div class="feat" data-page-node-id="GePT39cjjvnJVTrUFCnHRN"><span class="dot" data-page-node-id="YyKrFJBmoFXZTlZQWBbBBc"></span><div data-page-node-id="a5yQuV1mFlXA3EkCOI001R"><b data-page-node-id="4VMsbjTuzE8VMomErvWwSq">实时环境感知地图</b><br data-page-node-id="puk57XeFL7xiqEkHj34WJX"><span data-page-node-id="3aChYhJfKO3q3RRuvh0J7S">11 个驻地天气/海况/地形实时呈现，异常自动高亮提醒。</span></div></div>
+    </div>
+    <div class="card" data-page-node-id="WCF3BGIhvD7vZ2FvfABSTR">
+      <h4 data-page-node-id="K1UdApMc7h3ErRz6GZ7NdP">新手三步上手</h4>
+      <ol class="steps" data-page-node-id="gQUpmC7Dgh0DKo3OLzm48b">
+        <li data-page-node-id="c84DOpr83x8GhmZOwKtBGF">双击项目里的 <b data-page-node-id="yFr2V62wV2k4XScSqXfQqo">0_启动产品.bat</b></li>
+        <li data-page-node-id="sa1RGPj4OoRyAv0dwLlmWu">等黑窗口出现「按 Ctrl+C 停止」，浏览器会自动弹出本页</li>
+        <li data-page-node-id="kWVia1Ijp7L9tM4srxEsvO">点「指挥控制台」「兵力池」或「作战环境地图」开始使用</li>
+      </ol>
+      <p class="note" data-page-node-id="qbisxhzCkpH4f5eDweHbqf">三个页面右上角都有同一排导航，随时互相跳转；使用遇到问题看《产品使用手册.md》</p>
+    </div>
+  </section>
+</main>
+
+<footer data-page-node-id="xWRZ2dwJvGHrPENNns59WF">
+  联合作战指挥多Agent系统 · 本地产品（数据不出本机）· 第五期 · 2026-09-24
+</footer>
+
+<script>
+/* 防呆：若有人把本页当本地文件直接打开（file://），
+   页面里的 / 与 /map 会被浏览器解析成硬盘根目录 → 出现 E:\ 索引 / file:///E:/map。
+   检测到 file:// 就自动把入口指向本机服务，并给出醒目提示。 */
+(function () {
+  if (location.protocol !== 'file:') return;
+  var base = 'http://127.0.0.1:8000';
+  document.querySelectorAll('a[data-serve]').forEach(function (a) {
+    a.setAttribute('href', base + a.getAttribute('data-serve'));
+  });
+  var bar = document.createElement('div');
+  bar.style.cssText = 'background:#FAEEDA;color:#854F0B;border-bottom:1px solid rgba(0,0,0,.12);' +
+    'padding:11px 20px;font-size:13px;line-height:1.6;text-align:center';
+  bar.innerHTML = '⚠ 你是<b>直接打开了本地文件</b>，链接会指向硬盘导致打不开。' +
+    '正确用法：回到项目目录<b>双击「0_启动产品.bat」</b>，浏览器会自动打开产品首页' +
+    '（<b>http://127.0.0.1:8000/home</b>）。下面的按钮已自动指向本机服务，若服务已启动可直接点击。';
+  document.body.insertBefore(bar, document.body.firstChild);
+})();
+</script>
+</body>
+</html>

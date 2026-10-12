@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-page-node-id="TiHRmGDQHS7kpGafxn15hI">
+<head data-page-node-id="azoZlFMi5UWb0s2WOG8FpC">
+<meta charset="UTF-8" data-page-node-id="BOmDxpBVbpWJIU3y1B56bt">
+<meta name="viewport" content="width=device-width, initial-scale=1.0" data-page-node-id="3szwn9ddTLUbBp6QTPvQOA">
+<title>联合作战指挥多 Agent 系统 · 汇报稿</title>
+<style>
+  @page { size: A4; margin: 16mm 15mm 14mm 15mm; }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0; padding: 28px 20px 40px; background: #eef1f6;
+    font-family: "Microsoft YaHei", "PingFang SC", "Source Han Sans SC", sans-serif;
+    color: #1f2733; font-size: 15.5px; line-height: 1.85;
+  }
+  .sheet {
+    max-width: 760px; margin: 0 auto; background: #fff; border-radius: 4px;
+    box-shadow: 0 2px 18px rgba(24,39,66,.12); padding: 40px 44px 46px;
+  }
+  h1 {
+    font-size: 24px; margin: 0 0 6px; color: #1f4e79; letter-spacing: .02em;
+    border-bottom: 3px solid #1f4e79; padding-bottom: 14px;
+  }
+  h2 {
+    font-size: 18px; margin: 34px 0 12px; color: #1f4e79;
+    border-left: 4px solid #1f4e79; padding-left: 10px;
+  }
+  h3 { font-size: 16px; margin: 24px 0 10px; color: #2c5f8a; }
+  p { margin: 0 0 12px; }
+  blockquote {
+    margin: 0 0 20px; padding: 12px 16px; background: #f4f7fb;
+    border-left: 4px solid #9db8d2; color: #4a5568; font-size: 14px;
+  }
+  blockquote p { margin: 0; }
+  strong { color: #14385c; }
+  hr { border: none; border-top: 1px dashed #c7d0da; margin: 28px 0; }
+  ul, ol { margin: 0 0 14px; padding-left: 24px; }
+  li { margin-bottom: 6px; }
+  table { border-collapse: collapse; width: 100%; margin: 14px 0 18px; font-size: 14px; }
+  th, td { border: 1px solid #d3dae3; padding: 8px 10px; text-align: left; vertical-align: top; }
+  th { background: #eaf1f9; color: #1f4e79; font-weight: 600; }
+  code { background: #f0f2f5; padding: 1px 5px; border-radius: 3px; font-size: 13px; }
+  .foot-meta { margin-top: 34px; padding-top: 12px; border-top: 1px solid #e1e6ec;
+               font-size: 12px; color: #8a94a0; text-align: right; }
+
+  @media (max-width: 640px) {
+    body { padding: 16px 10px 28px; font-size: 15px; }
+    .sheet { padding: 22px 18px 26px; box-shadow: none; }
+    h1 { font-size: 20px; }
+    h2 { font-size: 17px; margin-top: 26px; }
+    table { font-size: 13px; display: block; overflow-x: auto; white-space: nowrap; }
+  }
+  @media print {
+    body { padding: 0; background: #fff; font-size: 11pt; }
+    .sheet { max-width: none; box-shadow: none; padding: 0; }
+    h2 { page-break-after: avoid; }
+    table { page-break-inside: avoid; }
+  }
+</style>
+</head>
+<body data-page-node-id="o52MrFnmPnxSq26wHuab5F">
+<div class="sheet" data-page-node-id="mv8AwrVG9rEY9UJLWxUM8B">
+<h1 data-page-node-id="4mFuryNJN6T26bm7U7GBxe">联合作战指挥多 Agent 系统 · 汇报稿</h1>
+<blockquote data-page-node-id="0S6MHO6V50rhGSD62f3hoU">
+<p data-page-node-id="HkWdJHqETg6l4MMSd2914R">时长约 6 分钟。括号内是提示，不用念。照读即可，每节控制在标注时间内。</p>
+</blockquote>
+<hr  data-page-node-id="0kKWSNhZkwoP4aPnyQho6q"/>
+<h2 data-page-node-id="AOquLMIjep01qMrHP5Os9I">开场（40 秒）</h2>
+<p data-page-node-id="mJBGDBSEsYcnFk9CgCB2WK">我汇报的是联合作战指挥多 Agent 系统的设计方案。</p>
+<p data-page-node-id="lsXqvlft1fDz0tTHi7B9Va">一句话说清楚它干什么：<strong data-page-node-id="oyTTlTUhGRKWt2jjHBRCCc">把用自然语言描述的作战问题，可靠地转换成一份有全局约束、数字可追溯、冲突可以裁决的结构化方案。</strong></p>
+<p data-page-node-id="6srVINnk4FbIR6Rvy3R0iY">请注意这里有三个关键词——<strong data-page-node-id="EKZSzFCbcH150z38PIQvNB">有约束、可追溯、能裁决</strong>。这不是一个陪人聊军事话题的机器人，它的产出是要能被检查、能被追问、能被复盘的。</p>
+<h2 data-page-node-id="qwkrHKGfQGVqD8aRIMRL78">一、核心玩法（80 秒）</h2>
+<p data-page-node-id="xH8VdFYbMSfXFj7qwmWLPl">它的核心玩法是<strong data-page-node-id="ozMAod7Fib2QuCfOE2A53q">"总指挥加三军参谋"的角色分工，不是让一个大模型包打天下。</strong></p>
+<p data-page-node-id="9WBB1SEh1dagmP4ZFuRKEe">举两个例子：</p>
+<p data-page-node-id="46DXMYU7UgKBUFI3gw7rPu">第一种情况，用户问"陆军现在多少人、多少装备"。这个问题系统只派陆军参谋一个人去查数据库，查完直接回答，<strong data-page-node-id="83K7ErlDBHA8x6E1xsnuu3">海军、空军、总指挥都不惊动</strong>。又快又省。</p>
+<p data-page-node-id="pHMgoyr2t07XSwjxsPaBZv">第二种情况，用户给一个复杂作战背景，比如一次联合登陆。这时候才由总指挥出场：拆解任务、下发全局约束，然后海陆空三个参谋<strong data-page-node-id="Xejw1LSE41FRRSnVeF9Ld5">同时</strong>各自拟方案；三个方案出来以后，系统先检测他们有没有抢同一批资源——运输机架次、火力支援、时间窗口这些都是共享的；<strong data-page-node-id="BDxo0oxHrCelSZCe0A3fda">没冲突就直接合成，有冲突就让冲突的双方开一轮协商，最多三轮，谈不拢由总指挥强制裁决。</strong></p>
+<p data-page-node-id="YWIhkoH9FtThl0rjrRP2qm">我特别说明一下为什么要这样设计。如果让一个大模型一口气写完整个方案，会有三个问题躲不掉：<strong data-page-node-id="BWuuacxzcT9dYsrCHvT0cC">数字是它"说"出来的，不是查出来的</strong>；<strong data-page-node-id="EVnHyzH7veW2FdHAUJvoZt">条件它自己会改</strong>，今天说用一个旅明天改成两个旅；<strong data-page-node-id="xAb8mmGeHT4zjaboJaLHvt">三军抢资源它看不出来</strong>，因为它是一口气写下来的，不存在三方对账的动作。我们这套分工，本质上是把这三个漏洞用流程堵住。</p>
+<h2 data-page-node-id="sOa9F0z1jsjSq3JCCkDlTk">二、现在做到哪一步（70 秒）</h2>
+<p data-page-node-id="68aaODVuqKhGhiStjPkYR8">我如实汇报进度，分三层：</p>
+<p data-page-node-id="y7V3b3qWyyCcInCfcGoRyb"><strong data-page-node-id="fh1AAEC9zrxGzgfk8ZzRSv">第一层，架构和规则设计，百分之百完成。</strong> 四个角色怎么分工、两条链路怎么走、八条硬规则、五条收敛判据、七条通信契约，全部定稿，没有悬而未决的架构问题。</p>
+<p data-page-node-id="tJeoDNHyNrVTQZXFWWc2vB"><strong data-page-node-id="uJO5oF7cLlRjPuPm7EMXuq">第二层，控制流原型，大约六成，而且是实测过的。</strong> 我用模拟模型把整条链路跑通了：十二项链路验证加十四项规则自测，全部通过。具体跑通了什么——领域外提问会拒答；单域问题走快通道只派一个参谋；三个参谋能并行出方案、能协商、能仲裁；还有四类故障，方案超限、产物残缺、约束矛盾、某个参谋失联，系统都能正确处置，<strong data-page-node-id="eNWNfewn7AVxNXExKQlSdM">不会崩</strong>。</p>
+<p data-page-node-id="eKFKnxdOtcIjujU254gfty"><strong data-page-node-id="T611vUJaIFE7xtFhMsiAAb">第三层，产品代码，一行都还没写。</strong> 现在目录里只有文档、图和测试脚本。</p>
+<p data-page-node-id="GGxV0YRrhUHi0WLCBpKDDx">我要主动说明一句：<strong data-page-node-id="TmLr1TYyjF8i1gBfgI8nHL">原型验证的是"控制流"，不是"语义"。</strong> 也就是说，链路跑得通这件事被证明了，但真模型下参谋拟出来的方案质量如何、真实兵力数据接进来怎么样，还没验。这正是下一步要优先解决的。</p>
+<h2 data-page-node-id="9HCGf0ESp8AeCBk82l646Q">三、接下来怎么走（70 秒）</h2>
+<p data-page-node-id="DmhM1iXs3d98V4lPp0J5dN">分五期推进，每期单独验收，不做最后一锤子买卖。</p>
+<p data-page-node-id="1ORPFazvE8HmhEfzUstlTp">第一期就是本轮：<strong data-page-node-id="SThDJOKRxZ13Yzjv46tsux">建真实兵力池，接线上模型，跑通最小闭环</strong>，判据很简单——"陆军多少人"这个问答得对，而且数字能追到库里。</p>
+<p data-page-node-id="2MXqLdX8j11MrcE1WrOwz6">第二期做协商落盘和硬规则执行；第三期做多轮会话和增量重规划；第四期做本地部署大模型，同时做集成和韧性；第五期才做 MCP 外部服务和前端页面。</p>
+<p data-page-node-id="q8yycTb2YMpoFkCCTvxxzr">这里有两个顺序上的安排，我说明一下理由：</p>
+<p data-page-node-id="EFFJXs8j1Q9ilxxsqqhiwD"><strong data-page-node-id="1F0kYHQgIrK7cGiSAmluhf">为什么先接线上模型、后面才本地部署？</strong> 因为要先用最强的模型把"参谋到底能不能干好这个活"验证清楚。否则一旦效果不好，就会出现"是模型不行还是工程有问题"的互相甩锅。本地部署放在第四期，到时候只需要做能力回归，不用推翻设计。</p>
+<p data-page-node-id="Krl5Je47dzikceI2YykjNC"><strong data-page-node-id="oEakWqCovJQ0aVzL3UFnE4">为什么前端放最后？</strong> 因为底层能力没定型就先做界面，界面一定返工。所以一到四期全是后端，用命令行和日志验收，第五期才上页面。</p>
+<h2 data-page-node-id="AWjjFrJ6l6jzDXcmDpoNrE">四、风险（60 秒）</h2>
+<p data-page-node-id="yWqcDUP8LkCpzPytI0eq6b">三条主要风险：</p>
+<p data-page-node-id="o9g1YxKDvX1LxtMVhauJ2P"><strong data-page-node-id="kjcFuiMl6DCsEExBpS2GSG">第一，最大的风险是中途失控</strong>——目标范围不小，而验收标准定的是"链路跑通"。对策就是刚才说的分期验收，每期有独立判据，一期不通过不往下走。</p>
+<p data-page-node-id="9Rz0TTlGsdeaasSFNdHKxj"><strong data-page-node-id="NO1mHSHyphGY2CFAFHM4De">第二，语义层还没验证。</strong> 真模型下参谋方案质量未知。这是第一期要第一时间打掉的问号。</p>
+<p data-page-node-id="6IKeb3fnmkgdhN63vnwN2U"><strong data-page-node-id="1sHA0f4dBBntH1eHdOmtjS">第三，本地部署之后方案质量可能下降。</strong> 换成本地模型能力会掉一截，对策是拿同一套测试用例做回归，不达标就调整本地模型规格，或者保留线上加本地的混合模式。</p>
+<h2 data-page-node-id="eyFtKNXQANNYQCTHbD7ye0">五、需要什么（40 秒）</h2>
+<p data-page-node-id="OOVVMKxekKTd2k1EuqVC8b">四样东西：<strong data-page-node-id="Q1P86WpYKriWIdGJJCx4bM">线上大模型的 API 账号</strong>（主力加轻量双档，双档可以省掉大约八成的辅助调用成本）；<strong data-page-node-id="kwCs3bezLluWiolqrZD5Fs">兵力池的种子数据</strong>（三份 JSON，字段结构我们出，数据请业务方填）；第四期本地部署的算力（等第二期之后评估）；第五期的前端人力。</p>
+<h2 data-page-node-id="5e80HlijqSgcEaQ7RELFnX">收尾（20 秒）</h2>
+<p data-page-node-id="NfMlZ8HfgbWGuULuISKmaX">以上就是设计方案和推进计划。四项关键决策——先做最小可用、先线上后本地、验收口径是链路跑通、先底层后前端——都已经确定，写进了项目书。</p>
+<p data-page-node-id="1WbLgfArphbdwlWydMElz1"><strong data-page-node-id="rQ9Ha4TOPht5hhHuuVkvyZ">如果领导认可，我下一步就开工第一期</strong>，先把真实兵力池建起来、线上模型接上，让"陆军多少人"这个问答得准、数字可追溯。有了这个，后面四期才有可信的地基。</p>
+<hr  data-page-node-id="UbaNRlDGkCWAZOHwXYmPzb"/>
+<h2 data-page-node-id="mUXwm1jPJGQuvipbFhmDhw">附：领导可能问的问题，提前准备好怎么答</h2>
+<p data-page-node-id="uampTkhFOLQYn1iIiYRSs8"><strong data-page-node-id="0MBtcv4PeS9N7wJquOjoti">问：这跟直接接一个大模型有什么区别？</strong>
+答：三个硬区别——数字全部查库、带来源可审计，不是模型心算；全局约束只能总指挥下发，参谋不能自己改条件；三军抢资源会被检测出来并裁决。还有两条：领域外的问题明确拒答，不做通用助手；支持多轮改条件，改一个条件只重算受影响的参谋。</p>
+<p data-page-node-id="mHBxazBB8FuBeErcSAmzKM"><strong data-page-node-id="M7ul3RWG6LekWBuRi4D2IN">问：多久能做完？</strong>
+答：我不给拍脑袋的工期，只给判据。第一期就是"陆军多少人答得对、数字可追溯"，这一条做到了第一期就完成。工期取决于投入的人力，您可以根据各期判据自己排。</p>
+<p data-page-node-id="4P7EAVa0CmTsUpj27R8vWk"><strong data-page-node-id="uE5mIe4FiNorC8jggX1ARZ">问：现在一行代码都没有，前面时间花在哪了？</strong>
+答：花在设计决策和验证上。这套系统的难点不在写代码，在于定清楚什么情况下只叫一个参谋、什么情况下三个一起上、冲突了谁说了算。这些问题如果边写边想，返工代价很大。而且我们已经不是纸面设计——控制流跑通了，十二项加十四项测试全过，过程中还抓出了几个真 bug，比如参谋节点会自己给自己派活跑成死循环。这些坑现在踩掉，比写完三千行代码再踩便宜得多。</p>
+<p data-page-node-id="HxVX3d49GonKWSFSRbCCSP"><strong data-page-node-id="yGvxwAIhHYOle0rL9FjB1i">问：为什么 MCP 和前端都放最后？</strong>
+答：MCP 是接情报、气象这类外部数据的，属于能力扩展，主链路不依赖它，先做没有收益。前端放最后是怕底层没定型被界面绑死。这两个都不影响系统能不能用。</p>
+<p data-page-node-id="VbyWwdAswiLHGebmBe8D0W"><strong data-page-node-id="ZVPjmAcsDGBcGWHHvEGpcg">问：为什么要先线上后本地？</strong>
+答：为了把"模型能力"和"工程问题"分开验证。先线上用强模型证明参谋确实能干好活，再换本地，那时候如果效果下降，责任清楚——就是模型规格的问题，调规格或者走混合模式，不用怀疑设计。</p>
+<p data-page-node-id="nCx7SoLSyFR0OgQxbPFBIM"><strong data-page-node-id="EUXc0NPdRYPwZOn0CzgXAP">问：数据从哪来？</strong>
+答：我们自己定字段结构——单位、人数、装备型号数量、驻地这些，先出三份 JSON 模板，请业务方填数，然后灌进 SQLite。参谋只能通过查询拿数字，不能自己编。</p>
+<p data-page-node-id="z5RkpfvqPIOQlqBRFwKe74"><strong data-page-node-id="OJyYQ2PKh4nZZ1klvJlo1f">问：能不能保证数字不出错？</strong>
+答：分两层。架构上做了硬约束：所有数字必须来自 SQL 查询并带来源标记，没有来源的数字通不过校验——这一条是机器判的，不是提示词要求的。但"保证零差错"是更强的承诺，需要真实数据接进来之后做一轮核对才能下结论，目前的验收口径定的是链路跑通。</p>
+<p data-page-node-id="0sRbgdkfDQsrmqNgj54aob"><strong data-page-node-id="1U4ZZEcvi6q9UDphGYTTdh">问：做出来到底能干什么用？</strong>
+答：定位是筹划层面的决策支持，不是实战指挥。用户提一个作战背景，系统出一份带兵力编成、行动时序、风险和备选的方案，而且每一步都能追问"这个数字哪来的""为什么这么定"。领域外的问题它会拒答，真实情报和实战指挥它不做。</p>
+</div>
+</body>
+</html>

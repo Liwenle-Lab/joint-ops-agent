@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-page-node-id="7AfvnHF6sxWWCteJxGC8Gd">
+<head data-page-node-id="aCkxfCjHg3v7EXp7VaZFmg">
+<meta charset="utf-8" data-page-node-id="UmS1swfoBQjExRY2X84bRO">
+<title>作战环境地图 · 驻地锚点</title>
+<style>
+  html, body { margin: 0; padding: 0; height: 100%;
+    font-family: -apple-system, "Microsoft YaHei", "PingFang SC", sans-serif;
+    color: #2C2C2A; background: #fff; }
+  body { display: flex; flex-direction: column; }
+  #wrap { display: flex; flex: 1; min-height: 0; }
+  #map { flex: 1; height: 100%; position: relative; }
+  #side { width: 330px; overflow-y: auto; background: #fff;
+    border-left: 0.5px solid rgba(0,0,0,.15); padding: 1rem 1.25rem 2rem; }
+  h1 { font-size: 15px; font-weight: 500; margin: 0 0 4px; }
+  .sub { font-size: 12px; color: #666; margin: 0 0 10px; line-height: 1.6; }
+  .srcbar { font-size: 11.5px; color: #666; background: #F7F7F5; border-radius: 8px;
+    padding: 6px 9px; margin-bottom: 12px; line-height: 1.6; }
+  .dot { display: inline-block; width: 6px; height: 6px; border-radius: 50%;
+    margin-right: 5px; vertical-align: 1px; }
+  .dot.ok  { background: #3B6D11; }
+  .dot.mid { background: #C98A00; }
+  .dot.bad { background: #A32D2D; }
+  .grp { font-size: 12px; color: #888; margin: 14px 0 6px; font-weight: 500; }
+  .item { padding: 8px 10px; border-radius: 8px; background: #F7F7F5;
+    margin-bottom: 6px; cursor: pointer; border-left: 3px solid transparent; }
+  .item:hover { background: #EEEDFE; }
+  .item.land { border-left-color: #3B6D11; }
+  .item.port { border-left-color: #185FA5; }
+  .item.airfield { border-left-color: #0F6E56; }
+  .nm { font-size: 13px; font-weight: 500; }
+  .meta { font-size: 12px; color: #666; margin-top: 2px; }
+  .env { font-size: 12px; color: #185FA5; margin-top: 4px; line-height: 1.6; }
+  .env.err { color: #A32D2D; }
+  .env.load { color: #999; }
+  /* 坐标提示：只做文字说明，不挡任何交互 */
+  #tip { font-size: 12px; color: #666; position: absolute; left: 12px; top: 12px;
+    background: #fff; padding: 6px 10px; border-radius: 8px;
+    border: 0.5px solid rgba(0,0,0,.15); z-index: 10; pointer-events: none; }
+  /* ★ 全局顶栏必须放在 #map 容器「外面」。
+     腾讯地图 SDK 初始化时会往容器里注入一层 z-index:1000 的透明 div 吞掉
+     全部鼠标事件 —— 只要导航是 #map 的子元素，就一定看得见点不动（第一版
+     就栽在这里）。改成页面级 flex 行，从结构上杜绝被遮挡。四个入口并列，
+     符合"控制台 / 兵力池 / 地图是同级页面"的心智模型。 */
+  #topnav { flex: 0 0 auto; display: flex; align-items: center; gap: 6px;
+    padding: 7px 14px; background: #fff;
+    border-bottom: 0.5px solid rgba(0,0,0,.15); }
+  #topnav .tn-brand { font-size: 12.5px; color: #888; margin-right: 6px; }
+  #topnav a, #topnav button {
+    font: inherit; font-size: 12px; text-decoration: none; cursor: pointer;
+    color: #2C2C2A; background: #fff; border: 0.5px solid rgba(0,0,0,.2);
+    border-radius: 8px; padding: 5px 11px; }
+  #topnav a:hover, #topnav button:hover {
+    background: #EEEDFE; border-color: #534AB7; color: #534AB7; }
+  #topnav a.cur { border-color: #534AB7; color: #534AB7; font-weight: 500;
+    background: #F1F0FD; }
+  #topnav .tn-sp { flex: 1; }
+  .iw { background: #fff; padding: 8px 12px; border-radius: 8px;
+    border: 0.5px solid rgba(0,0,0,.15); font-size: 12px;
+    max-width: 240px; line-height: 1.6; }
+  #boot { position: absolute; inset: 0; display: none; align-items: center;
+    justify-content: center; font-size: 13px; color: #666; text-align: center;
+    padding: 2rem; line-height: 1.8; }
+</style>
+</head>
+<body data-page-node-id="rB5Sa6F8to8O3e2qvM91kW">
+<!-- 全局顶栏：与控制台、兵力池同一套四入口导航（在 #map 之外，见样式注释） -->
+<div id="topnav" data-page-node-id="topnav">
+  <span class="tn-brand" data-page-node-id="tnbrand">联合作战指挥多Agent系统</span>
+  <a id="navHome"    data-path="/home"    href="/home" data-page-node-id="navhome">产品首页</a>
+  <a id="navConsole" data-path="/"        href="/"     data-page-node-id="navconsole">指挥控制台</a>
+  <a id="navForce"   data-path="/force"   href="/force" data-page-node-id="navforce">兵力池</a>
+  <a id="navMap"     data-path="/map"     href="/map"  class="cur" data-page-node-id="navmap">环境地图</a>
+  <span class="tn-sp"></span>
+  <button id="fit" type="button" data-page-node-id="MVlwo9rd9xoUNe4KMvrF4F">全览</button>
+</div>
+
+<div id="wrap" data-page-node-id="MCApsRxR0YCUefb3oPQUJK">
+  <div id="map" data-page-node-id="GZ5L8BujbpXkUCDnUIfGuN">
+    <div id="tip" data-page-node-id="Q5yL7Xg38BmHju9EqmrI9P">坐标已做 WGS84→GCJ-02 纠偏</div>
+    <div id="boot" data-page-node-id="MAoROgzBjXU5ImEurXSZ1L"></div>
+  </div>
+  <div id="side" data-page-node-id="2dDCawM8Dj9le3tpFYc83x">
+    <h1 data-page-node-id="OuDWpxzta89ANrkWTZ0Kdr">驻地地理锚点</h1>
+    <p class="sub" data-page-node-id="4Sy7AW2tQEWHSU4w1JFV5e">虚构驻地 → 真实坐标 → 真实环境数据。点击列表或地图标记查看详情。</p>
+    <div class="srcbar" id="srcbar" data-page-node-id="rkttvxdChJcfQM0soNsKKZ"><span class="dot mid" data-page-node-id="qO29LgnaUqvAFI7iMiBLcL"></span>正在连接数据源…</div>
+    <div id="list" data-page-node-id="xGgTJi1X7q4e6fgbFfqIHd"></div>
+  </div>
+</div>
+
+<script>
+/* ─────────────────────────────────────────────────────────
+   底图来源：腾讯地图 GL（境内图源，符合地图合规要求）。
+   本文件不含任何明文密钥 —— 它是要发给别人看的。
+
+   未配 key 时 SDK 走体验额度：底图照常渲染，但会弹一条"产品鉴权失败"
+   的白卡片，且顶上有水印。正式部署请把自有 key 填到 MAP_KEY，
+   并在腾讯位置服务后台按域名加白名单。（密钥不要提交到公开仓库。）
+   ───────────────────────────────────────────────────────── */
+const MAP_KEY = '';
+
+/* 离线兜底表：内容与 seed/geo_anchor.json 保持一致。
+   页面优先从后端 /api/env/anchors 拉取（那才是唯一坐标源），
+   只有后端不可用时才用这份，保证地图在任何情况下都有东西可看。 */
+const FALLBACK_ANCHORS = [
+  {base:"东山基地",  lat:23.70, lon:117.42, kind:"land",     region:"福建漳州东山岛", terrain:"濒海丘陵"},
+  {base:"西岭基地",  lat:25.08, lon:116.80, kind:"land",     region:"福建龙岩",       terrain:"内陆山地"},
+  {base:"北坪基地",  lat:30.89, lon:120.09, kind:"land",     region:"浙江湖州",       terrain:"平原水网"},
+  {base:"漠北阵地",  lat:41.00, lon:113.13, kind:"land",     region:"内蒙古乌兰察布", terrain:"高原草原"},
+  {base:"南屿军港",  lat:26.62, lon:119.68, kind:"port",     region:"福建宁德三都澳", terrain:"天然深水港",
+   seaLat:26.60, seaLon:119.80},
+  {base:"东澳军港",  lat:30.02, lon:122.11, kind:"port",     region:"浙江舟山",       terrain:"群岛锚地"},
+  {base:"南屏军港",  lat:23.35, lon:116.68, kind:"port",     region:"广东汕头",       terrain:"河口港"},
+  {base:"云岭场站",  lat:26.64, lon:118.18, kind:"airfield", region:"福建南平",       terrain:"内陆山地"},
+  {base:"临漳场站",  lat:26.07, lon:119.30, kind:"airfield", region:"福建福州",       terrain:"濒海平地"},
+  {base:"中原场站",  lat:31.82, lon:117.23, kind:"airfield", region:"安徽合肥",       terrain:"内陆平原"},
+  {base:"朔风场站",  lat:31.98, lon:120.89, kind:"airfield", region:"江苏南通",       terrain:"长江口北翼"}
+];
+const KIND_CN = {land:"陆上基地", port:"军港", airfield:"场站"};
+const COLOR = {land:"#3B6D11", port:"#185FA5", airfield:"#0F6E56"};
+
+/* file:// 直接打开时没有同源后端，显式指向本机控制台；
+   从 /map 打开时 API 与页面同源，用相对路径即可。 */
+const API_BASE = location.protocol === 'file:' ? 'http://127.0.0.1:8000' : '';
+
+/* 顶部返回入口：走本服务时是相对路径（同源）；被当成本地文件双击打开时，
+   相对路径会解析成 E:\ 盘路径 —— 显式改指本机服务，否则"返回控制台"必然报错。 */
+if (location.protocol === 'file:') {
+  document.querySelectorAll('#topnav a[data-path]').forEach(a => {
+    a.href = API_BASE + a.dataset.path;
+  });
+}
+
+const listBox = document.getElementById('list');
+const srcbar  = document.getElementById('srcbar');
+const bootBox = document.getElementById('boot');
+
+let map = null, infoWin = null, pts = [], markers = null, labels = null;
+
+/* ── WGS84 → GCJ-02 纠偏（GPS 坐标直画在腾讯底图上会偏几百米）── */
+const A = 6378245.0, EE = 0.00669342162296594323;
+function tLat(x, y){let r=-100+2*x+3*y+0.2*y*y+0.1*x*y+0.2*Math.sqrt(Math.abs(x));
+  r+=(20*Math.sin(6*x*Math.PI)+20*Math.sin(2*x*Math.PI))*2/3;
+  r+=(20*Math.sin(y*Math.PI)+40*Math.sin(y/3*Math.PI))*2/3;
+  r+=(160*Math.sin(y/12*Math.PI)+320*Math.sin(y*Math.PI/30))*2/3;return r;}
+function tLon(x, y){let r=300+x+2*y+0.1*x*x+0.1*x*y+0.1*Math.sqrt(Math.abs(x));
+  r+=(20*Math.sin(6*x*Math.PI)+20*Math.sin(2*x*Math.PI))*2/3;
+  r+=(20*Math.sin(x*Math.PI)+40*Math.sin(x/3*Math.PI))*2/3;
+  r+=(150*Math.sin(x/12*Math.PI)+300*Math.sin(x/30*Math.PI))*2/3;return r;}
+function wgs2gcj(lat, lon){
+  if(lon < 72 || lon > 137 || lat < 3 || lat > 54) return [lat, lon];   // 境外不纠偏
+  let dLat = tLat(lon-105, lat-35), dLon = tLon(lon-105, lat-35);
+  const rl = lat/180*Math.PI; let m = Math.sin(rl); m = 1 - EE*m*m;
+  const sm = Math.sqrt(m);
+  dLat = (dLat*180)/((A*(1-EE))/(m*sm)*Math.PI);
+  dLon = (dLon*180)/(A/sm*Math.cos(rl)*Math.PI);
+  return [lat+dLat, lon+dLon];
+}
+
+async function api(path){
+  try{
+    const r = await fetch(API_BASE + path, {cache:'no-store'});
+    if(!r.ok) return null;
+    return await r.json();
+  }catch(e){ return null; }
+}
+
+/* ── 鉴权浮层守卫 ─────────────────────────────────────────
+   SDK 在未配 key 时插一张白卡片（无 class，z-index 200）盖在地图正中。
+   注意它不一定挂在 body 下 —— 实测挂在地图容器内部，所以按 body > div
+   扫是扫不到的（第一版就栽在这儿，界面看着照旧）。改为全量扫描 + 两道
+   安全阀：不含地图画布的容器才动手，含侧栏的祖先一律不碰。
+   底图本身没问题，是这层提示在挡路，拦掉它；侧栏会如实标注底图来源
+   与正式部署需要补什么，不隐瞒。 */
+function sweepAuthOverlay(){
+  const side = document.getElementById('side');
+  const topnav = document.getElementById('topnav');
+  document.querySelectorAll('div').forEach(el => {
+    if(side && el.contains(side)) return;      // #wrap 这类祖先不动
+    if(topnav && topnav.contains(el)) return;  // 全局顶栏一律不碰
+    if(el.querySelector('canvas')) return;     // 地图容器不动
+    const t = el.textContent || '';
+    if(t.length < 200 && /鉴权|密钥/.test(t)) el.remove();
+  });
+}
+
+function setSrc(kind, text){
+  const cls = {ok:'ok', mid:'mid', bad:'bad'}[kind] || 'mid';
+  srcbar.innerHTML = `<span class="dot ${cls}"></span>${text}`;
+}
+
+/* ── 图层 ── */
+function svgMarker(color){
+  const s = `<svg xmlns="http://www.w3.org/2000/svg" width="22" height="30" viewBox="0 0 22 30">
+    <path d="M11 0C5 0 0 5 0 11c0 8 11 19 11 19s11-11 11-19C22 5 17 0 11 0z" fill="${color}"/>
+    <circle cx="11" cy="11" r="4.5" fill="#fff"/></svg>`;
+  return 'data:image/svg+xml,' + encodeURIComponent(s);
+}
+
+function drawLayers(){
+  const styles = {};
+  Object.keys(COLOR).forEach(k => {
+    styles[k] = new TMap.MarkerStyle({
+      width: 22, height: 30, anchor: {x: 11, y: 30}, src: svgMarker(COLOR[k])
+    });
+  });
+  markers = new TMap.MultiMarker({
+    map, styles,
+    geometries: pts.map((p, i) => ({
+      id: String(i), styleId: p.kind,
+      position: new TMap.LatLng(p.gLat, p.gLon)
+    }))
+  });
+  labels = new TMap.MultiLabel({
+    map, styles: {lb: new TMap.LabelStyle({
+      color:'#2C2C2A', size:11, offset:{x:0, y:-34}, angle:0,
+      alignment:'center', verticalAlignment:'top'})},
+    geometries: pts.map((p, i) => ({
+      id:'l'+i, styleId:'lb', content:p.base,
+      position:new TMap.LatLng(p.gLat, p.gLon)
+    }))
+  });
+}
+
+function fitAll(){
+  if(!map || !pts.length) return;
+  const lats = pts.map(p => p.gLat), lons = pts.map(p => p.gLon);
+  try{
+    if(typeof map.fitBounds === 'function'){
+      map.fitBounds(new TMap.LatLngBounds(
+        new TMap.LatLng(Math.min(...lats), Math.min(...lons)),
+        new TMap.LatLng(Math.max(...lats), Math.max(...lons))), {padding: 70});
+      return;
+    }
+  }catch(e){ /* SDK 版本不支持就落到下面手算 */ }
+  const latSpan = Math.max(...lats) - Math.min(...lats);
+  const lonSpan = Math.max(...lons) - Math.min(...lons);
+  const span = Math.max(latSpan, lonSpan * 0.72) * 1.25;
+  map.setCenter(new TMap.LatLng((Math.min(...lats) + Math.max(...lats)) / 2,
+                                (Math.min(...lons) + Math.max(...lons)) / 2));
+  map.setZoom(span > 18 ? 4 : span > 9 ? 5 : span > 4.5 ? 6 : 7);
+}
+
+function renderList(){
+  listBox.innerHTML = '';
+  ['land','port','airfield'].forEach(kind => {
+    const items = pts.filter(p => p.kind === kind);
+    if(!items.length) return;
+    const g = document.createElement('div');
+    g.className = 'grp';
+    g.textContent = KIND_CN[kind] + `（${items.length}）`;
+    listBox.appendChild(g);
+    items.forEach(p => {
+      const d = document.createElement('div');
+      d.className = 'item ' + kind;
+      d.innerHTML = `<div class="nm">${p.base}</div>
+        <div class="meta">${p.region} · ${p.terrain}</div>
+        <div class="env load" data-env="${p.base}">加载中…</div>`;
+      d.onclick = () => focusOn(p);
+      listBox.appendChild(d);
+    });
+  });
+}
+
+function cellOf(base){ return listBox.querySelector(`[data-env="${base}"]`); }
+
+function focusOn(p){
+  if(!map) return;
+  map.easeTo({center:new TMap.LatLng(p.gLat, p.gLon), zoom:9}, {duration:500});
+  const cell = cellOf(p.base);
+  infoWin.setPosition(new TMap.LatLng(p.gLat, p.gLon));
+  infoWin.setContent(`<div class="iw">
+    <b style="font-size:13px">${p.base}</b><br>
+    <span style="color:#666">${p.region} · ${p.terrain}</span><br>
+    ${cell ? cell.textContent : ''}</div>`);
+  infoWin.open();
+}
+
+function renderEnv(base, items, note){
+  const cell = cellOf(base);
+  if(!cell) return;
+  if(!items.length){
+    cell.className = 'env err';
+    cell.textContent = note || '环境数据不可用';
+    return;
+  }
+  cell.className = 'env';
+  cell.textContent = items.map(x => `${x.label} ${x.value}${x.unit || ''}`).join(' · ')
+    + (note ? '　' + note : '');
+}
+
+/* 路径一：走后端（与参谋同一套缓存与降级逻辑） */
+async function loadEnvViaApi(p){
+  const d = await api('/api/env/brief?base=' + encodeURIComponent(p.base));
+  if(!d || !d.items) return false;
+  renderEnv(p.base, d.items, d.cached ? '（缓存）' : '');
+  return true;
+}
+
+/* 路径二：浏览器直连 Open-Meteo（后端没起时的兜底，字段与后端对齐） */
+async function loadEnvDirect(p){
+  const isPort = p.kind === 'port';
+  const lat = (isPort && p.seaLat != null) ? p.seaLat : p.lat;
+  const lon = (isPort && p.seaLon != null) ? p.seaLon : p.lon;
+  const base = isPort ? 'https://marine-api.open-meteo.com/v1/marine'
+                      : 'https://api.open-meteo.com/v1/forecast';
+  const pr = new URLSearchParams({
+    latitude: lat, longitude: lon, timezone: 'auto', forecast_days: 1,
+    daily: isPort ? 'wave_height_max,sea_surface_temperature_max'
+                  : 'temperature_2m_max,wind_speed_10m_max'
+  });
+  const items = [];
+  const d = await fetch(base + '?' + pr, {cache:'no-store'}).then(r => r.json());
+  const dd = d.daily || {};
+  if(isPort){
+    if(dd.wave_height_max?.[0] != null)
+      items.push({label:'浪高', value:dd.wave_height_max[0], unit:' m'});
+    if(dd.sea_surface_temperature_max?.[0] != null)
+      items.push({label:'海温', value:dd.sea_surface_temperature_max[0], unit:' ℃'});
+  }else{
+    if(dd.temperature_2m_max?.[0] != null)
+      items.push({label:'气温', value:dd.temperature_2m_max[0], unit:' ℃'});
+    if(dd.wind_speed_10m_max?.[0] != null)
+      items.push({label:'风速', value:dd.wind_speed_10m_max[0], unit:' km/h'});
+  }
+  const e = await fetch('https://api.open-meteo.com/v1/elevation?latitude='
+    + p.lat + '&longitude=' + p.lon, {cache:'no-store'}).then(r => r.json());
+  const el = Array.isArray(e.elevation) ? e.elevation[0] : e.elevation;
+  if(el != null) items.push({label:'高程', value:el, unit:' m'});
+  renderEnv(p.base, items, '（直连兜底）');
+}
+
+async function loadEnv(p){
+  try{
+    if(await loadEnvViaApi(p)) return;
+    await loadEnvDirect(p);
+  }catch(err){
+    renderEnv(p.base, [], '环境数据不可用：' + err.message);
+  }
+}
+
+/* ── 主流程（SDK 就绪后才跑） ── */
+async function boot(opts){
+  const noMap = !!(opts && opts.sdkMissing);
+
+  let anchors = FALLBACK_ANCHORS, srcNote = '内置坐标兜底（后端未启动）';
+  const j = await api('/api/env/anchors');
+  if(j && (j.anchors || []).length){
+    anchors = j.anchors.map(a => ({
+      base:a.base, lat:a.lat, lon:a.lon, kind:a.kind, region:a.region,
+      terrain:a.terrain, seaLat:a.sea_lat, seaLon:a.sea_lon
+    }));
+    srcNote = `坐标取自后端锚点表（${anchors.length} 处）`;
+  }
+
+  pts = anchors.map(a => {
+    const [la, ln] = wgs2gcj(a.lat, a.lon);
+    return {...a, gLat: la, gLon: ln};
+  });
+
+  if(!noMap){
+    map = new TMap.Map('map', {zoom: 6, pitch: 0,
+                               center: new TMap.LatLng(30.0, 118.5)});
+    infoWin = new TMap.InfoWindow({map, position: new TMap.LatLng(30, 118.5),
+      offset:{x:0, y:-38}, enableCustom:true, content:'<div></div>'});
+    infoWin.close();
+    document.getElementById('fit').onclick = fitAll;
+    drawLayers();
+    fitAll();
+  }
+
+  renderList();
+  setSrc('mid', srcNote + '　·　环境数据由 Open-Meteo 实时提供　·　底图：腾讯地图'
+         + (MAP_KEY ? '' : '（体验额度）'));
+
+  let ok = 0;
+  for(const p of pts){                 // 串行：11 个并发会撞上接口限频
+    await loadEnv(p);
+    const c = cellOf(p.base);
+    if(c && !c.classList.contains('err')) ok++;
+  }
+  setSrc(ok === pts.length ? 'ok' : ok ? 'mid' : 'bad',
+         `环境数据 ${ok}/${pts.length} 可用　·　${srcNote}　·　底图：腾讯地图`
+         + (MAP_KEY ? '' : '（体验额度）'));
+}
+
+(function loadSdk(){
+  const s = document.createElement('script');
+  s.src = 'https://map.qq.com/api/gljs?v=1.exp' + (MAP_KEY ? '&key=' + MAP_KEY : '');
+  s.onload = () => {
+    if(typeof TMap === 'undefined'){
+      showBootFail('地图 SDK 已加载但未就绪，请刷新重试。');
+      return;
+    }
+    boot();
+  };
+  s.onerror = () => showBootFail(
+    '地图 SDK 加载失败。<br>底图需要访问 map.qq.com，请检查网络后刷新。<br>'
+    + '右侧环境数据不受影响，仍可正常查看。');
+  document.head.appendChild(s);
+
+  // 浮层可能在 SDK 初始化后任意时刻注入，持续扫一段时间
+  new MutationObserver(sweepAuthOverlay).observe(document.body, {childList: true});
+  [800, 2000, 4000, 7000].forEach(t => setTimeout(sweepAuthOverlay, t));
+})();
+
+function showBootFail(html){
+  bootBox.style.display = 'flex';
+  bootBox.innerHTML = html;
+  setSrc('bad', '底图不可用；右侧环境数据走 Open-Meteo，与此互不影响');
+  // 底图挂了也要把清单和环境数据渲染出来 —— 空间分布少了，态势不能少
+  boot({sdkMissing: true});   // eslint-disable-line
+}
+</script>
+</body>
+</html>

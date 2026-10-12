@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>兵力池 · 联合作战指挥多Agent系统</title>
+<link rel="stylesheet" href="/static/style.css">
+<style>
+  /* 独立页面需要一个可滚动的主体：style.css 里 body 是 height:100vh + overflow:hidden，
+     那是为控制台三栏布局准备的，这里补一个滚动容器。 */
+  .force-page { flex: 1; overflow-y: auto; padding: 16px 20px 32px; }
+  .force-inner { max-width: 1180px; margin: 0 auto; }
+  .force-note {
+    font-size: 12px; color: var(--tx-2); background: var(--bg-card);
+    border: 0.5px solid var(--bd); border-radius: var(--r-md);
+    padding: 9px 12px; margin-bottom: 14px; line-height: 1.7;
+  }
+  .toolbar {
+    display: flex; flex-wrap: wrap; gap: 8px; align-items: center;
+    background: var(--bg-card); border: 0.5px solid var(--bd);
+    border-radius: var(--r-md); padding: 10px 12px; margin-bottom: 14px;
+  }
+  .toolbar .tb-label {
+    font-size: 12px; color: var(--tx-3); margin-right: 4px;
+  }
+  .toolbar .tb-gap { flex: 1; }
+  .toolbar .tb-hint { font-size: 11.5px; color: var(--tx-3); }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    <span class="mark">联</span>
+    <div>
+      <h1>兵力池</h1>
+      <p class="sub">三军兵力 · 装备型号 · 共享资源容量（可增删改）</p>
+    </div>
+  </div>
+  <!-- 与控制台、地图页完全一致的四入口导航 -->
+  <nav class="pnav">
+    <a id="navHome" class="pill pill-link" href="/home">产品首页</a>
+    <a id="navConsole" class="pill pill-link" href="/">指挥控制台</a>
+    <a id="navForce" class="pill pill-link cur" href="/force">兵力池</a>
+    <a id="navMap" class="pill pill-link" href="/map"
+       title="驻地地理锚点与实时气象/海况/地形（参谋拟案用的就是这份数据）">环境地图</a>
+  </nav>
+  <div class="status">
+    <span id="srcTag" class="pill">读取中…</span>
+  </div>
+</header>
+
+<main class="force-page">
+  <div class="force-inner">
+    <div id="adminBar" class="toolbar">
+      <span class="tb-label">管理</span>
+    </div>
+    <div class="force-note">
+      这里显示的就是参谋拟案时查的那个库（<code>db/joint_ops.db</code>），
+      <b>界面上的 15900 就是方案里写的 15900</b>，中间不做任何二次加工。<br>
+      <b>在这里改动会立即生效</b>：参谋下次取数就是新值；同时会回写
+      <code>seed/army|navy|airforce.json</code>，所以哪天重建库，你改过的兵也不会丢。
+      每一次改动都留痕，点上面的「变更记录」可查。<br>
+      「单次行动投入上限」是规则 HR-01 用来卡投入量的阈值，与全军在编员额是两个口径，
+      两者大小关系没有意义，不要拿来算占比。
+    </div>
+    <div class="pane-head">
+      <span id="forceMeta">兵力池总览</span>
+      <button id="loadForce" class="btn btn-ghost btn-sm">刷新</button>
+    </div>
+    <div id="forceBox"><div class="log-empty">正在读取兵力池…</div></div>
+  </div>
+</main>
+
+<script src="/static/reload_guard.js"></script>
+<script src="/static/force_view.js"></script>
+<script src="/static/force_admin_ui.js"></script>
+<script>
+'use strict';
+const box = document.getElementById('forceBox');
+const meta = document.getElementById('forceMeta');
+const tag = document.getElementById('srcTag');
+
+let lastData = null;
+
+async function load() {
+  tag.textContent = '读取中…';
+  const d = await window.ForceView.loadForceInto(box, '', {
+    /* 给了 actions 才渲染「操作」那一列。删除/编辑走的是一个入口，
+       具体弹什么框由 ForceAdminUI 决定，视图层只管把那一行数据递出去。 */
+    actions: {
+      addUnit: () => window.ForceAdminUI.unitForm(null),
+      addEq: () => window.ForceAdminUI.eqForm(null),
+      editUnit: u => window.ForceAdminUI.unitForm(u),
+      delUnit: u => window.ForceAdminUI.delUnit(u),
+      editEq: e => window.ForceAdminUI.eqForm(e),
+      delEq: e => window.ForceAdminUI.delEq(e),
+      editRes: (r, cap) => window.ForceAdminUI.resForm(r, cap),
+    },
+  });
+  if (!d) {
+    tag.textContent = '服务未就绪';
+    tag.className = 'pill pill-mock';
+    meta.textContent = '兵力池读取失败';
+    return;
+  }
+  lastData = d;
+  const nU = (d.units || []).length, nE = (d.equipment_rows || []).length;
+  meta.textContent = '兵力池总览 · ' + (d.services || []).length + ' 个军种 · '
+    + nU + ' 个单位 · ' + nE + ' 条装备记录';
+  tag.textContent = '数据源就绪';
+  tag.className = 'pill pill-live';
+}
+
+window.ForceAdminUI.mount({
+  toolbar: document.getElementById('adminBar'),
+  getData: () => lastData,
+  reload: load,
+  apiBase: '',
+});
+document.getElementById('loadForce').addEventListener('click', load);
+load();
+</script>
+</body>
+</html>
