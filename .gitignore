@@ -1,0 +1,34 @@
+# ===== 密钥（绝不上传）=====
+config/.env
+*.env
+
+# ===== 数据库（可由 db/build_db.py 重建）=====
+db/*.db
+db/*.db-shm
+db/*.db-wal
+
+# ===== Python 运行产物 =====
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# ===== 本地调试输出（不需要给别人的）=====
+accept_*.txt
+fc*.txt
+fc_*.txt
+mt*.txt
+p5_*.txt
+p6_*.txt
+webtest*.txt
+fullchain_out.txt
+ui_full2.png
+ui_run2.png
+
+# ===== 系统杂项 =====
+Thumbs.db
+.DS_Store
+
+# ===== 运行期产物（调试跟踪/生成方案/日志）=====
+trace/
+plans/
+server.log
